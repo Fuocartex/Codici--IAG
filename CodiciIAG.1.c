@@ -4,6 +4,8 @@
 
 bool isSimplex = false;
 
+//prova
+// // sto provando a caricare tutto nel nuovo branch
 // Definizione di un simplicio
 typedef struct Simplex {
     int* vertices;  // Array di vertici del simplicio
@@ -108,6 +110,8 @@ int main() {
     SimplicialComplex* complex;
     int size;
     int  n = 0;
+
+    printf("ciao");
 
     // Chiediamo all'utente qual'è il simplesso più grande per inizializzare lo spazio
     printf("Inserisci la grandezza del simplesso più grande nel complesso: ");
