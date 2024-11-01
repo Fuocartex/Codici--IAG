@@ -4,8 +4,6 @@
 
 bool isSimplex = false;
 
-//prova
-// // sto provando a caricare tutto nel nuovo branch
 // Definizione di un simplicio
 typedef struct Simplex {
     int* vertices;  // Array di vertici del simplicio
