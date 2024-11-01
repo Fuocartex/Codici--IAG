@@ -127,7 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CodiciIAG.1.c" />
+    <ClCompile Include="Complesso-Simpliciale.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Intestazione.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
