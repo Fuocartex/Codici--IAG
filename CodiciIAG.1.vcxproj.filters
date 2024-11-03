@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Intestazione.h">
+    <ClInclude Include="Compl_Simpl.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
