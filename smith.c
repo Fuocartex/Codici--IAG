@@ -20,7 +20,8 @@ void Smith (int**, int**, int**, int**, int**, int, int, int);
 int min (int, int);
 bool boolSmith (int**, int, int);
 void SmithNormalForm (int**, int**, int**, int, int);
-void multiplyMatrices(int**, int**, int**, int, int, int); 
+void multiplyMatrices(int**, int**, int**, int, int, int);
+void SmithNF (int**, int, int); 
 
 int main() {
 	int n=0, m=0; 
@@ -38,6 +39,7 @@ int main() {
 		return 0;
 	}
 	
+	//SmithNF(D, m, n);
 	SmithNormalForm(D, S, T, m, n);
 	
 	printf("\nmat A = ");
@@ -271,7 +273,7 @@ bool boolSmith (int **A, int r, int k) {
 	return true;
 }
 
-// arrivo alla forma normale di Smith 
+// forma normale di Smith 
 void SmithNormalForm (int **A, int **S, int **T, int m, int n) { 
 	int **At=input_null(At, n, m);
 	int **Tt=input_null(Tt, n, n);
@@ -316,4 +318,38 @@ void multiplyMatrices(int **A, int **B, int **C, int m, int n, int p) {
 	   		}
 		}
 	}
+}
+
+// forma normale di Smith senza ricordare le matrici S e T
+void SmithNF (int **A, int m, int n) { 
+	int **S=input_id(S, m);
+	int **T=input_id(T, n);
+	int **At=input_null(At, n, m);
+	int **Tt=input_null(Tt, n, n);
+	
+	int k=0, r=min(m, n);
+	while (k!=r) {
+		Smith(A, S, T, At, Tt, m, n, k); // prima raggiungo la forma diagonale 
+		k++;
+	}
+	
+	int it=0, iter=0;
+	while (it!=r) {
+		if (!boolSmith(A, r, it)) { // nel caso non sia di smith 
+			for (int i=it+1; i<r; i++) { // sommo tutte le righe alla prima riga 
+				addRows(A, i, it, -1, n);
+				addRows(S, i, it, -1, m);
+			}
+			iter=it; 
+			while (iter!=r) {
+				Smith(A, S, T, At, Tt, m, n, iter); // e riapplico smith così da ottenere in alto il mcm dei d_i
+				iter++;
+			}
+		}
+		it++;
+		if (it==r) {
+			switchSigns(A, S, m, m, n, r-1); // cambio eventualmente il segno dell'ultimo elemento in diagonale 
+		}	
+	}
+	return;
 }
