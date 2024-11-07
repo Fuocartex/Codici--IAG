@@ -3,9 +3,15 @@
 #ifndef Complesso_Simplciale
 #define Complesso_simpliciale
 
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
+//Definzione delle strutture
 typedef struct Simplex {
     int* vertices;  // Array di vertici del simplicio
-    int size;       // Numero di vertici nel simplicio
+    int position;   // Numero del 
     struct Simplex* next;
 } Simplex;
 
@@ -15,6 +21,50 @@ typedef struct {
     int size;            // Numero del simplesso 
 } SimplicialComplex;
 
+
+//Definizione delle funzioni
+Simplex* createSimplex(int, int);
+SimplicialComplex* readComplex(int);
+void printComplex(SimplicialComplex*, int);
+int* creasubs(int*, int, int);
+bool equal(int*, int*, int);
+bool isIn(Simplex*, Simplex*, int);
+bool isSimplicial(SimplicialComplex*, int);
+
+
+//Esplicitare le funzioni
+
+// funzione per leggere un complesso da input
+SimplicialComplex* readComplex(int size){
+	SimplicialComplex* complex = (SimplicialComplex*)malloc(size * sizeof(SimplicialComplex));
+	int n = 0;
+
+	for (int i = 0; i < size; i++) {
+		complex[i].size = i;
+		printf("Inserisci il numero di %d-simplessi: ", i);
+		scanf("%d", &n);
+		complex[i].simplices = createSimplex(i, n);
+	}
+	return complex;
+}
+
+// funzione per stampare un simplesso 
+void printComplex(SimplicialComplex* complex, int size){
+	Simplex* app;
+		for (int i = 0; i < size; i++) {
+			app = complex[i].simplices;
+			printf("{ ");
+			while (app) {
+				for (int j = 0; j <= complex[i].size; j++)
+					printf("%d ", app->vertices[j]);
+				app = app->next;
+				if(app)
+					printf(", ");
+			}
+			printf("}\n");
+		}
+	return;
+}
 
 // funzione per creare un sottoinsieme di un simplesso
 int* creasubs(int* v, int i, int n) {
@@ -70,7 +120,7 @@ bool isIn(Simplex* s, Simplex* s1, int sizeN) {
 }
 
 // Funzione per controllare se il complesso è simpliciale
-bool isSimmplicial(SimplicialComplex* sc, int size) {
+bool isSimplicial(SimplicialComplex* sc, int size) {
 	//faccio il controllo per ogni n-simplesso partendo dall'ultimo
     for (int i = size - 1; i > 0; i--)
         if (!isIn(sc[i].simplices, sc[i - 1].simplices, sc[i].size))
