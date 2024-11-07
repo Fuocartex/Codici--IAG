@@ -13,10 +13,8 @@ int main() {
     int size;
     int  n = 0;
 
-    printf("ciao");
-
-    // Chiediamo all'utente qual'è il simplesso più grande per inizializzare lo spazio
-    printf("Inserisci la grandezza del simplesso più grande nel complesso: ");
+    // Chiediamo all'utente qual'Ã¨ il simplesso piÃ¹ grande per inizializzare lo spazio
+    printf("Inserisci la grandezza del simplesso piÃ¹ grande nel complesso: ");
     scanf("%d", &size);
 
     // Inizializziamo lo spazio per i simplici
