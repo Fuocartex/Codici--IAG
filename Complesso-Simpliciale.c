@@ -12,8 +12,6 @@ int main() {
     int size;
     int  n = 0;
 
-    printf("ciao");
-
     // Chiediamo all'utente qual'è il simplesso più grande per inizializzare lo spazio
     printf("Inserisci la grandezza del simplesso piu' grande nel complesso: ");
     scanf("%d", &size);
