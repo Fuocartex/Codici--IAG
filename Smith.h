@@ -4,7 +4,7 @@
 
 int** input_sm (int**, int**, int, int);
 int** input_id (int**, int);
-int**input_null(int**, int, int);
+int** input_null (int**, int, int);
 void printMatrix (int**, int, int);
 bool nullMatrix (int**, int, int);
 int** traspMatrix (int**, int**, int, int);
@@ -243,8 +243,10 @@ bool boolSmith (int **A, int r, int k) {
 
 // forma normale di Smith 
 void SmithNormalForm (int **A, int **S, int **T, int m, int n) { 
-	int **At=input_null(At, n, m);
-	int **Tt=input_null(Tt, n, n);
+	int **At=NULL;
+	At=input_null(At, n, m);
+	int **Tt=NULL;
+	Tt=input_null(Tt, n, n);
 	
 	int k=0, r=min(m, n);
 	while (k!=r) {
@@ -290,10 +292,14 @@ void multiplyMatrices(int **A, int **B, int **C, int m, int n, int p) {
 
 // forma normale di Smith senza ricordare le matrici S e T
 void Smith_D (int **A, int m, int n) { 
-	int **S=input_id(S, m);
-	int **T=input_id(T, n);
-	int **At=input_null(At, n, m);
-	int **Tt=input_null(Tt, n, n);
+	int **S=NULL; 
+	S=input_id(S, m);
+	int **T=NULL; 
+	T=input_id(T, n);
+	int **At=NULL; 
+	At=input_null(At, n, m);
+	int **Tt=NULL; 
+	Tt=input_null(Tt, n, n);
 	
 	SmithNormalForm(A, S, T, m, n);
 	return;

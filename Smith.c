@@ -9,10 +9,14 @@ int main() {
 	scanf("%d", &m);
 	printf("Colonne: ");
 	scanf("%d", &n);
-	int **A=input_null(A, m, n);
-	int **D=input_sm(D, A, m, n);
-	int **S=input_id(S, m);
-	int **T=input_id(T, n);
+	int **A=NULL;
+	A=input_null(A, m, n);
+	int **D=NULL;
+	D=input_sm(D, A, m, n);
+	int **S=NULL;
+	S=input_id(S, m);
+	int **T=NULL;
+	T=input_id(T, n);
 	
 	if (nullMatrix(A, m, n)) {
 		printf("La matrice in esame è nulla\n");
@@ -31,8 +35,10 @@ int main() {
 	printMatrix(T, n, n);
 	
 	// verifichiamo che la funzione Smith funzioni correttamente vericando che S*A*T=D
-	int **SA=input_null(SA, m, n);
-	int **SAT=input_null(SAT, m, n);
+	int **SA=NULL; 
+	SA=input_null(SA, m, n);
+	int **SAT=NULL;
+	SAT=input_null(SAT, m, n);
 	multiplyMatrices(S, A, SA, m, m, n);
 	multiplyMatrices(SA, T, SAT, m, n, n); 
 	printf("\nS*A*T = ");
