@@ -111,11 +111,10 @@ void solve_sys (int **sys, int *A, int *B, int *Alpha, int *Gamma, int m) {
 	S=input_id(S, m);
 	int **T=NULL; 
 	T=input_id(T, 1);
-	SmithNormalForm(D, S, T, m, 1); // applichiamo Smith alla matrice/vettore D
-	//bezout (m, B, D, S, T);
+	bezout (m, B, D, S, T);
 	
 	for (int i=0; i<m; i++)  {
-		Gamma[i]=S[0][i]; // Gamma è la prima riga della matrice S prodotta da Smith(D) (corrisponde a D*S essendo D del tipo (1, 0, ..., 0)
+		Gamma[i]=S[0][i]; // Gamma corrisponde ai coefficienti di Bezout, ossia è la prima riga della matrice S
 	}
 	return;
 }
@@ -131,5 +130,4 @@ int adjust_sol (int x, int mod) {
 		x=mod+x; 
 	}
 	return x;
-}
-		
+}	

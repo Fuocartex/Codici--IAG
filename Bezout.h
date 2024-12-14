@@ -5,6 +5,7 @@
 int* imputBezout (int, int*);
 void bezout (int, int*, int**, int**, int**);
 void printBezout (int, int*, int**, int**);
+long int MCD (long int, long int);
 
 // imput vettore elem contenente i numeri a cui verrà applicato Bezout
 int* imputBezout (int n, int *elem) {
@@ -42,6 +43,31 @@ void printBezout (int n, int *elem, int **MCD, int **S) {
 		}
 	}
 	return; 
+}
+
+// funzione compatta per MCD tra due numeri 
+/*int MCD (int a, int b) {
+	int **MCD=NULL;
+	MCD=input_null(MCD, 2, 1);
+	MCD[0][0]=a; 
+	MCD[1][0]=b;
+	int **S=NULL; 
+	S=input_id(S, 2);
+	int **T=NULL; 
+	T=input_id(T, 1);
+	SmithNormalForm(MCD, S, T, 2, 1);
+	int mcd=MCD[0][0];
+	return mcd;
+}*/
+
+long int MCD(long int a, long int b) {
+	long int temp=0; 
+	while (b!=0) {
+		temp=b;
+		b=a%b;
+		a=temp;
+	}
+	return a;
 }
 
 #endif
