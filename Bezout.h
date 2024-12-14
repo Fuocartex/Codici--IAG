@@ -46,7 +46,7 @@ void printBezout (int n, int *elem, int **MCD, int **S) {
 }
 
 // funzione compatta per MCD tra due numeri 
-/*int MCD (int a, int b) {
+int MCD (int a, int b) {
 	int **MCD=NULL;
 	MCD=input_null(MCD, 2, 1);
 	MCD[0][0]=a; 
@@ -58,16 +58,6 @@ void printBezout (int n, int *elem, int **MCD, int **S) {
 	SmithNormalForm(MCD, S, T, 2, 1);
 	int mcd=MCD[0][0];
 	return mcd;
-}*/
-
-long int MCD(long int a, long int b) {
-	long int temp=0; 
-	while (b!=0) {
-		temp=b;
-		b=a%b;
-		a=temp;
-	}
-	return a;
 }
 
 #endif
