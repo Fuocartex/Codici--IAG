@@ -5,7 +5,7 @@
 int* imputBezout (int, int*);
 void bezout (int, int*, int**, int**, int**);
 void printBezout (int, int*, int**, int**);
-long int MCD (long int, long int);
+int MCD (int, int);
 
 // imput vettore elem contenente i numeri a cui verrà applicato Bezout
 int* imputBezout (int n, int *elem) {
