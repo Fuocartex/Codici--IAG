@@ -4,7 +4,7 @@ int main()
 {
 	int num = 0, n = 0, i= 0;
 	printf("Inserire il numero di cui si vuole approssimare la radice x = ");
-	scanf("%d", &num);
+	scanf("%d", &num); 
 	printf("inseriro il numero di approssimazioni deisderate n = ");
 	scanf("%d", &n);
 	

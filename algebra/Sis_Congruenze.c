@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "Smith.h"
-#include "Bezout.h"
+#include "..\Include\Smith.h"
+#include "..\Include\Bezout.h"
 
 int** input_sys (int**, int);
 void print_sys (int**, int);

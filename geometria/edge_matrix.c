@@ -1,4 +1,4 @@
-#include "Compl_Simpl.h"
+#include "..\Include\Compl_Simpl.h"
 
 int main(){
 	

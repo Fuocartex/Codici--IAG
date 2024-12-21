@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "Smith.h"
+#include "..\Include\Smith.h"
 
 int main() {
 	int n=0, m=0; 

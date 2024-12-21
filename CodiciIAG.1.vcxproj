@@ -130,7 +130,7 @@
     <ClInclude Include="Compl_Simpl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="algebra\FrazioniContinue.c" />
+    <ClCompile Include="algebra\Smith.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
