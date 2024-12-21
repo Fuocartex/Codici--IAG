@@ -34,13 +34,14 @@ Per quanto riguarda gli array, ho fatto un piccolo esperimento e mi sembra che t
 ```
 
 ---
-### Alcune funzioni utili:
+## Alcune funzioni utili:
 Qui raccoglierò le funzioni che penso utilizzeremo più spesso, in modo da semplificarci l'utilizzo della libreria. Non le inserisco tutte perché diventerebbe troppo lungo, quindi se incontrate qualche problema
 oppure vi sembra di non avere la funzione che vi serve potete guardare nella documentazione o chiedere a me.
 
 Tipicamente le funzioni hanno come primi argomenti le variabili dove verranno salvati i risultati delle operazioni, e successivamente gli argomenti da usare per le operazioni.
 Dove non scrivo alcun valore di ritorno della funzione, è perché la funzione è di tipo `void`.
 
+### Inizializzazione e assegnazione
 ```
   mpz_set (mpz_t a, mpz_t b)
   mpz_set_si (mpz_t a, signed long int b)
@@ -55,6 +56,8 @@ Combina le operazioni di inizializzazione della funzione `mpz_init` con l'assegn
   mpz_swap (mpz_t a, mpz_t b)
 ```
 Scambia il valore di a e b.
+
+### Operazioni aritmetiche
 ```
   mpz_add (mpz_t a, mpz_t b, mpz_t c)
   mpz_add_ui (mpz_t a, mpz_t b, unsigned long int c)
@@ -90,6 +93,8 @@ adatte a noi, ma per più informazioni rimando alla documentazione).
   mpz_mod (mpz_t r, mpz_t n, mpz_t d)
 ```
 Calcola n modulo d e salva il risultato in r; il risultato prodotto è sempre >=0.
+
+### Operazioni di confronto
 ```
   int mpz_cmp (mpz_t a, mpz_t b)
   int mpz_cmp_si (mpz_t a, signed long int b)
@@ -104,9 +109,75 @@ Restituisce +1 se a>0, 0 se a=0, -1 se a<0.
 ```
 Restituisce un valore non-zero se a è pari, 0 se è dispari.
 
+### Operazioni bitwise
+```
+  mpz_mul_2exp (mpz_t a, mpz_t b, unsigned long int exp)
+  mpz_fdiv_q_2exp (mpz_t q, mpz_t n, unsigned long int exp)
+  mpz_fdiv_r_2exp (mpz_t r, mpz_t n, unsigned long int exp)
+```
+Eseguono moltiplicazione e divisione analogamente alle funzioni precedenti, ma moltiplicano / dividono per 2^exp. A livello pratico è realizzato con rispettivamente left shift e right shift dei bit, quindi
+sono molto efficienti: *è consigliato utilizzarle* al posto delle normali funzioni di moltiplicazione e divisione quando abbiamo a che fare con potenze di due.
+```
+  unsigned long int mpz_scan0 (mpz_t a, unsigned long int startingbit)
+  unsigned long int mpz_scan1 (mpz_t a, unsigned long int startingbit)
+```
+Scannerizza i bit dell'intero a, a partire dall'indice specificato da startingbit, verso le cifre più significative ("verso sinistra"), finché non viene trovato il primo 0 (risp. 1). Ad esempio: se chiamo
+`mpz_scan1(a, 0)` con a=3 ottengo 0 (3=11 in binario), con a=32 ottengo 5 (32=100000 in binario).
 
-## da completare
+### Input e output
+```
+  gmp_printf
+  gmp_scanf
+```
+Funzionano come printf e scanf in C, ma permettono di utilizzare anche lo specificatore di formato `%Zd` per il tipo `mpz_t`. Poiché `mpz_t` è un puntatore, non c'è bisogno dell'operatore `&` in `scanf`.
 
+### Numeri casuali
+Per generare numeri casuali la libreria richiede che sia inizializzato un oggetto di tipo `gmp_randstate_t` (che a fine programma dovrà essere deallocato con `gmp_randclear()`) e che gli venga assegnato un seed
+iniziale. Questo si può fare con le funzioni:
+```
+  gmp_randinit_default (gmp_randstate_t state)
+  gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
+```
+Una volta fatto questo, è possibile chiamare le funzioni che producono numeri casuali, come:
+```
+  mpz_urandomm (mpz_t a, gmp_randstate_t state, mpz_t n)
+  mpz_urandomb (mpz_t a, gmp_randstate_t state, unsigned long int exp)
+```
+La prima genera un numero intero casuale compreso tra 0 e n-1 inclusi, la seconda un numero tra 0 e 2^n -1 inclusi; il numero prodotto viene salvato in a.
 
+Per ottenere sequenze di numeri sempre diversi ho trovato abbastanza soddisfacente usare il tempo come seed delle funzioni, quindi qualcosa del tipo:
+```
+  #include <time.h>
+  #include <gmp.h>
+  ...
+  // inizializzazione e assegnazione del seed:
+  gmp_randstate_t state;
+  gmp_randinit_default(state);
+  unsigned long int t = time(NULL);
+  gmp_randseed_ui(state, t);
+  // qui si possono chiamare le funzioni mpz_urandomm() e mpz_urandomb()
+  ...
+  gmp_randclear(randstate);
+```
 
-
+### Funzioni utili per test
+Ho trovato qualche funzione aritmetica che ci può essere utile per fare dei test, verificare la correttezza dei nostri programmi e fare possibili confronti. Queste funzioni **non dovranno essere nella versione
+finale** dato che sono algoritmi che dovremmo scrivere noi.
+```
+  mpz_gcd (mpz_t a, mpz_t b, mpz_t c)
+  mpz_gcdext (mpz_t a, mpz_t x, mpz_t y, mpz_t b, mpz_t c)
+```
+Salvano in a il massimo comun divisore di b e c; la seconda funzione in aggiunta fornisce x e y tali che a = b`*`x + c*y.
+```
+  int mpz_invert (mpz_t a, mpz_t x, mpz_t n)
+```
+Calcola l'inverso di x modulo n e salva il risultato in a. Se l'inverso esiste la funzione restituisce un valore non nullo; altrimenti restituisce 0.
+```
+  int mpz_jacobi (mpz_t a, mpz_t b)
+```
+Calcola il simbolo di Jacobi (a/b); definita solo per b dispari.
+```
+  int mpz_probab_prime_p (mpz_t n, int iter)
+```
+Questo è un test di primalità (implementa, tra le altre cose, il test di Miller-Rabin!). Restituisce 2 se n è certamente primo, 1 se è probabilmente primo (con probabilità di errore inferiore a 4^(-iter)), 0 se
+non è primo. (Consigliano valori di iter compresi tra 15 e 50).
