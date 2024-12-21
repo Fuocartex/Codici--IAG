@@ -16,7 +16,7 @@ void minUp (int**, int**, int, int, int, int);
 void div_rem (int**, int**, int, int, int, int);
 bool nullVector (int**, int, int);
 void Smith_fst (int**, int**, int**, int**, int**, int, int, int);
-int min (int, int);
+int my_min (int, int);
 bool boolSmith (int**, int, int);
 void SmithNormalForm (int**, int**, int**, int, int);
 void multiplyMatrices(int**, int**, int**, int, int, int);
@@ -218,7 +218,7 @@ void Smith_fst (int **A, int **S, int **T, int **At, int **Tt, int m, int n, int
 }
 
 // individuo il min tra due interi 
-int min (int m, int n) {
+int my_min (int m, int n) {
 	if (m<n) {
 		return m; 
 	} else {
@@ -248,7 +248,7 @@ void SmithNormalForm (int **A, int **S, int **T, int m, int n) {
 	int **Tt=NULL;
 	Tt=input_null(Tt, n, n);
 	
-	int k=0, r=min(m, n);
+	int k=0, r=my_min(m, n);
 	while (k!=r) {
 		Smith_fst(A, S, T, At, Tt, m, n, k); // prima raggiungo la forma diagonale 
 		k++;

@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <math.h>
-#include "Fermat.h"
+#include "..\Include\Fermat.h"
 
 bool eulero (long int, int);
 

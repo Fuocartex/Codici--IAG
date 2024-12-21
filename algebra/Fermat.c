@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <math.h>
-#include "Fermat.h"
+#include "..\Include\Fermat.h"
 
 int main() {
 	long int n=0; 
