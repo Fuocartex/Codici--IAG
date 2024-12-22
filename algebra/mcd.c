@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "mcd.h"
+#include "..\Include\mcd.h"
 
 int main () {
     mpz_t a,b,x;
