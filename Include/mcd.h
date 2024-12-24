@@ -145,7 +145,7 @@ void mcd_euclide_array (mpz_t a, mpz_t* integers, int n) {
 
         // divido per il minimo, calcolo i resti e sposto eventuali zeri ottenuti
         for (i=1; i<k; i++) {
-            mpz_fdiv_r(nums[i],nums[i],nums[0]); // a[i] diventa a[i] mod a[0], dove a[0] è il minimo
+            mpz_fdiv_r(nums[i],nums[i],nums[0]); // nums[i] diventa nums[i] mod nums[0], dove nums[0] è il minimo
 
             // se dopo la divisione ho ottenuto resto 0, porto il numero in fondo
             if (mpz_cmp_si(nums[i],0)==0) {
@@ -213,7 +213,7 @@ void mcd_binario_array (mpz_t a, mpz_t* integers, int n) {
     mpz_swap(nums[index_min],nums[0]);
     // divido per il minimo, calcolo i resti e sposto eventuali zeri ottenuti
     for (i=1; i<k; i++) {
-        mpz_fdiv_r(nums[i],nums[i],nums[0]); // a[i] diventa a[i] mod a[0], dove a[0] è il minimo
+        mpz_fdiv_r(nums[i],nums[i],nums[0]); // nums[i] diventa nums[i] mod nums[0], dove nums[0] è il minimo
         // se dopo la divisione ho ottenuto resto 0, porto il numero in fondo
         if (mpz_cmp_si(nums[i],0)==0) {
             mpz_swap(nums[i],nums[k-1]);
