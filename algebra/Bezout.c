@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "..\Include\bezout.h"
+#include "..\Include\Bezout.h"
 
 void print_bezout (mpz_t, mpz_t*, mpz_t*, int);
 
