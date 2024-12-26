@@ -3,7 +3,8 @@
 
 void bezout (mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
 void bezout_array (mpz_t, mpz_t*, mpz_t*, int);
-int inverso_mod (mpz_t, mpz_t, mpz_t);
+int inv_mod (mpz_t, mpz_t, mpz_t);
+void exp_mod (mpz_t, mpz_t, mpz_t, mpz_t);
 
 // funzioni ausiliarie per bezout:
 void init_id_matrix (mpz_t**, int);
@@ -141,7 +142,7 @@ void bezout_array (mpz_t d, mpz_t* coeff, mpz_t* integers, int n) {
 }
 
 // Calcola in x l'inverso di a modulo n: se esiste restituisce 1, altrimenti 0. Scelgo x>=0, e suppongo n>0.
-int inverso_mod (mpz_t x, mpz_t a, mpz_t n) {
+int inv_mod (mpz_t x, mpz_t a, mpz_t n) {
 	mpz_t d,y;
 	mpz_inits(d,y,NULL);
 
@@ -154,6 +155,29 @@ int inverso_mod (mpz_t x, mpz_t a, mpz_t n) {
 	// caso mcd(a,n)!=1: l'inverso non esiste
 	mpz_clears(d,y,NULL);
 	return 0;
+}
+
+// calcola in x la base b elevata alla potenza exp modulo n, con esponenziazione binaria
+void exp_mod (mpz_t x, mpz_t b, mpz_t exp, mpz_t n) {
+	int bit;
+	mpz_t squares,e;
+	mpz_init_set(squares,b);
+	mpz_init_set(e,exp);
+	mpz_set_si(x,1);
+
+	while (mpz_cmp_si(e,0)>0) {
+		bit=mpz_tstbit(e,0); // controllo l'ultima cifra della rappresentazione binaria di e
+		if (bit==1) { // se bit è 1 moltiplico x per il quadrato (mod n), altrimenti lascio così
+			mpz_mul(x,x,squares);
+			mpz_fdiv_r(x,x,n);
+		}
+		mpz_mul(squares,squares,squares); // aggiorno il quadrato (mod n)
+		mpz_fdiv_r(squares,squares,n);
+		mpz_fdiv_q_2exp(e,e,1); // shifto di 1 i bit di e
+	}
+
+	mpz_clears(squares,e,NULL);
+	return;
 }
 
 // inizializza M matrice identità n*n
