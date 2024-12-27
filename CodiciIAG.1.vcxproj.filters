@@ -15,6 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="geometria\Omologie.c">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="Include\Bezout.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -27,16 +32,14 @@
     <ClInclude Include="Include\Fermat.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Include\mcd.h">
+    <ClInclude Include="Include\Matrix.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Omo.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Include\Smith.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="geometria\edge_matrix.c">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
     #include <stdbool.h>
     #include <stdio.h>
     #include <stdlib.h>
-    #include <math.h>   
+    #include <math.h>   // Per la funzione pow
 
     /*Il complesso simpliciale è formato da un vettore di liste di vettori
     Ogni cella del primo vettore conterrà i rispettivi simplessi cella 0 gli 0-simpelessi cella 1 gli 1-simplessi etc..
