@@ -123,6 +123,10 @@ sono molto efficienti: *è consigliato utilizzarle* al posto delle normali funzi
 ```
 Scannerizza i bit dell'intero a, a partire dall'indice specificato da startingbit, verso le cifre più significative ("verso sinistra"), finché non viene trovato il primo 0 (risp. 1). Ad esempio: se chiamo
 `mpz_scan1(a, 0)` con a=3 ottengo 0 (3=11 in binario), con a=32 ottengo 5 (32=100000 in binario).
+```
+  int mpz_tstbit (mpz_t a, unsigned long int index)
+```
+Controlla il bit di a nella posizione specificata da index, e restituisce 0 o 1 a seconda di quale bit ci sia. Ad esempio, `mpz_tstbit(a,0)` restituirà 1 se a è dispari, 0 se è pari.
 
 ### Input e output
 ```
