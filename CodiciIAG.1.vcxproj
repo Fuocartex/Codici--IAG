@@ -28,7 +28,11 @@
     <ClInclude Include="Include\Smith.h" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClCompile Include="algebra\Smith.c" />
+=======
+    <ClCompile Include="geometria\Omologie.c" />
+>>>>>>> e2583ed2d4e86c886d19964b6ab6fac07b0d51d4
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
