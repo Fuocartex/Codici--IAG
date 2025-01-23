@@ -38,11 +38,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <ClCompile Include="algebra\Smith.c">
-=======
     <ClCompile Include="geometria\Omologie.c">
->>>>>>> e2583ed2d4e86c886d19964b6ab6fac07b0d51d4
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
