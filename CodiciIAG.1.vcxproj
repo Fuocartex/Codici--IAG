@@ -19,9 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="geometria\Omologie.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\Bezout.h" />
     <ClInclude Include="Include\Compl_Simpl.h" />
     <ClInclude Include="Include\Create_Factor.h" />
@@ -29,6 +26,9 @@
     <ClInclude Include="Include\Matrix.h" />
     <ClInclude Include="Include\Omo.h" />
     <ClInclude Include="Include\Smith.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="geometria\Omologie.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -192,7 +192,7 @@
                 for (int j = 0; j <= n; j++) {
 					v = creasubs(Nsimp->vertices, j, n);
 					k = base_number(Nmosimp, v, n);
-					printf("k = %d\n", k);
+					//printf("k = %d\n", k);
                     if (k != -1) {
                         matrix[k][i] = pow(-1, j);
                     }
