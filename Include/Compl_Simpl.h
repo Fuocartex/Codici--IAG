@@ -6,7 +6,7 @@
     #include <stdbool.h>
     #include <stdio.h>
     #include <stdlib.h>
-    #include <math.h>   
+    #include <math.h>   // Per la funzione pow
 
     /*Il complesso simpliciale è formato da un vettore di liste di vettori
     Ogni cella del primo vettore conterrà i rispettivi simplessi cella 0 gli 0-simpelessi cella 1 gli 1-simplessi etc..
@@ -30,7 +30,9 @@
 
     //Definizione delle funzioni
     Simplex* createSimplex(int, int);
+    Simplex* createSimplex_file(int, int, FILE*);
     SimplicialComplex* readComplex(int);
+    SimplicialComplex* readComplex_file(char *);
     void printComplex(SimplicialComplex*, int);
     int* creasubs(int*, int, int);
     bool equal(int*, int*, int);
@@ -58,6 +60,28 @@
 	        }
 	        return complex;
         }
+
+		SimplicialComplex* readComplex_file(char* file) {
+			FILE* f = fopen(file, "rt");
+			if (!f) {
+				printf("Errore nell'apertura del file\n");
+				return NULL;
+			}
+            else
+				printf("File aperto correttamente\n");
+			int size = 0;
+			fscanf(f, "%d", &size);
+			printf("size = %d\n", size);
+			SimplicialComplex* complex = (SimplicialComplex*)malloc(size * sizeof(SimplicialComplex));
+			int n = 0;
+			for (int i = 0; i < size; i++) {
+				fscanf(f, "%d", &n);
+				complex[i].size = n;
+				complex[i].simplices = createSimplex_file(i, n, f);
+			}
+			fclose(f);
+			return complex;
+		}
 
         // funzione per stampare un simplesso 
         void printComplex(SimplicialComplex* complex, int size){
@@ -169,6 +193,30 @@
             return head;
         }
 
+        Simplex* createSimplex_file(int size, int n, FILE* f) {
+            Simplex* simplex, * head, * app;
+            simplex = (Simplex*)malloc(sizeof(Simplex));
+            head = simplex;
+            simplex->next = NULL;
+            simplex->vertices = (int*)malloc((size + 1) * sizeof(int));
+            for (int j = 0; j < size + 1; j++) {
+                fscanf(f, "%d", &simplex->vertices[j]);
+            }
+            simplex->position = 0;
+            for (int i = 1; i < n; i++) {
+                app = (Simplex*)malloc(sizeof(Simplex));
+                app->next = NULL;
+                app->vertices = (int*)malloc((size + 1) * sizeof(int));
+                for (int j = 0; j < size + 1; j++) {
+                    fscanf(f, "%d", &app->vertices[j]);
+                }
+                app->position = i;
+                simplex->next = app;
+                simplex = simplex->next;
+            }
+            return head;
+        }
+
     #pragma endregion
 
 
@@ -192,7 +240,7 @@
                 for (int j = 0; j <= n; j++) {
 					v = creasubs(Nsimp->vertices, j, n);
 					k = base_number(Nmosimp, v, n);
-					printf("k = %d\n", k);
+					//printf("k = %d\n", k);
                     if (k != -1) {
                         matrix[k][i] = pow(-1, j);
                     }
