@@ -4,11 +4,14 @@
 
 	int** mul_matrix(int**, int, int, int**, int, int);
 	void print_matrix(int**, int, int);
+	void gauss(float**, int);
+	float det_matrix_triangular(float**, int);
+	//int** matrix_minor_NS(int**, int, int);
 	//int det_matrix(int**, int);
 	//double** gauss_iter(int**, int, int);
 	//int** inverse_matrix(int**, int, int);
 
-	int gcd(int a, int b) {
+	/*int gcd(int a, int b) {
 		while (b != 0) {
 			int temp = b;
 			b = a % b;
@@ -20,7 +23,7 @@
 	// Funzione per calcolare il minimo comune multiplo (MCM)
 	int lcm(int a, int b) {
 		return (a / gcd(a, b)) * b;
-	}
+	}*/
 
 	int** mul_matrix(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		if (col1 != row2) {
@@ -51,7 +54,7 @@
 		return;
 	}
 
-    // Funzione per calcolare l'inversa di una matrice intera
+    /* Funzione per calcolare l'inversa di una matrice intera
     int** invert_matrix_integer(int** matrix, int size) {
         // Costruzione della matrice estesa [A | I]
 		int** augmented = (int**)calloc(size, sizeof(int*));
@@ -118,11 +121,77 @@
         }
 
         return inverse; // Successo
+    }*/
+
+    void gauss(float** matrice, int n) {
+        for (int i = 0; i < n; i++) {
+            // Pivot
+            if (matrice[i][i] == 0) {
+                for (int k = i + 1; k < n; k++) {
+                    if (matrice[k][i] != 0) {
+                        // Scambia righe
+                        for (int j = 0; j < n; j++) {
+                            float temp = matrice[i][j];
+                            matrice[i][j] = matrice[k][j];
+                            matrice[k][j] = temp;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Normalizza la riga pivot
+            float pivot = matrice[i][i];
+            for (int j = 0; j < n; j++) {
+                matrice[i][j] /= pivot;
+            }
+
+            // Eliminazione verso il basso
+            for (int k = i + 1; k < n; k++) {
+                float coeff = matrice[k][i];
+                for (int j = 0; j < n; j++) {
+                    matrice[k][j] -= coeff * matrice[i][j];
+                }
+            }
+        }
     }
 
-
+	void gauss_rectangular(int** matrice, int row, int col) {
+		int r = 0;
+		for (int i = 0; i < col; i++) {
+			
+			// Pivot
+			if (matrice[i][i] == 0) {
+				for (int k = i + 1; k < row; k++) {
+					if (matrice[k][i] != 0) {
+						// Non scambio le righe perchè mi serve sapere quali sono le righe non nulle
+						r = k;
+						break;
+					}
+				}
+			}
+			// Normalizza la riga pivot
+			int pivot = matrice[r][i];
+			
+			// Eliminazione verso il basso
+			for (int k = 0; k < row && k != r; k++) {
+				int coeff = matrice[k][i]/pivot;
+				for (int j = i; j < col; j++) {
+					matrice[k][j] -= coeff * matrice[r][j];
+				}
+			}
+		}
+	}
 
 	
+	float det_matrix_triangular(float** matrice, int n) {
+		float det = 1;
+		for (int i = 0; i < n; i++) {
+			det *= matrice[i][i];
+		}
+		return det;
+	}
 
+	
 
 #endif
