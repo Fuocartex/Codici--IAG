@@ -2,11 +2,12 @@
 
 SimplicialComplex* complex_from_adjacency_matrix_complete (int**, int);
 SimplicialComplex* complex_from_adjacency_matrix_truncated (int**, int, int);
+SimplicialComplex* complex_from_1_simplices_complete (SimplicialComplex*, int);
+SimplicialComplex* complex_from_1_simplices_truncated (SimplicialComplex*, int, int);
 void add_k_simplices_adjacency_matrix (SimplicialComplex*, int**, int, int);
 
-// funzioni ausiliarie
-
 int check_neighbor_adjacency_matrix (int**, int*, int, int);
+int check_neighbor (SimplicialComplex*, int, int);
 
 
 // Costruisce il complesso simpliciale completo a partire dagli 1-simplessi, utilizzando la matrice di adiacenza.
@@ -94,6 +95,72 @@ SimplicialComplex* complex_from_adjacency_matrix_truncated (int** M, int n, int 
     return complex;
 }
 
+// Costruisce il complesso simpliciale completo a partire dagli n vertici e dagli 1-simplessi.
+// I vertici verranno rinominati a partire da 0 e con interi consecutivi (se vogliamo posso scrivere una funzione per farli ritornare ai nomi originali)
+SimplicialComplex* complex_from_1_simplices_complete (SimplicialComplex* complex, int n) {
+    int i,j;
+    int** M = (int**) malloc(n*sizeof(int*));
+    for (i=0; i<n; i++) M[i] = (int*) malloc(n*sizeof(int));
+    // salvo per comodita' in un array i vertici (per ovviare a problemi di nomenclatura ed evitare di scorrere sempre la lista)
+    int* vertices = (int*) malloc(n*sizeof(int));
+    Simplex* current=complex[0].simplices;
+    i=0;
+    while (current!=NULL) {
+        vertices[i]=current->vertices[0];
+        i++;
+        current=current->next;
+    }
+    
+    // costruisco la matrice di adiacenza
+    for (i=0; i<n; i++) {
+        M[i][i]=1;
+        for (j=i+1; j<n; j++) {
+            // controllo se il vertice i-esimo e il j-esimo sono collegati da un 1-simplesso
+            if (check_neighbor(complex,vertices[i],vertices[j])!=0) {
+                M[i][j]=1; M[j][i]=1;
+            }
+            else {
+                M[i][j]=0; M[j][i]=0;
+            }
+        }
+    }
+
+    return complex_from_adjacency_matrix_complete(M,n);
+}
+
+// Costruisce il complesso simpliciale a partire dagli n vertici e dagli 1-simplessi troncato fino ai k-simplessi (inclusi).
+// I vertici verranno rinominati a partire da 0 e con interi consecutivi (se vogliamo posso scrivere una funzione per farli ritornare ai nomi originali)
+SimplicialComplex* complex_from_1_simplices_truncated (SimplicialComplex* complex, int n, int k) {
+    int i,j;
+    int** M = (int**) malloc(n*sizeof(int*));
+    for (i=0; i<n; i++) M[i] = (int*) malloc(n*sizeof(int));
+    // salvo per comodita' in un array i vertici (per ovviare a problemi di nomenclatura ed evitare di scorrere sempre la lista)
+    int* vertices = (int*) malloc(n*sizeof(int));
+    Simplex* current=complex[0].simplices;
+    i=0;
+    while (current!=NULL) {
+        vertices[i]=current->vertices[0];
+        i++;
+        current=current->next;
+    }
+
+    // costruisco la matrice di adiacenza
+    for (i=0; i<n; i++) {
+        M[i][i]=1;
+        for (j=i+1; j<n; j++) {
+            // controllo se il vertice i-esimo e il j-esimo sono collegati da un 1-simplesso
+            if (check_neighbor(complex,vertices[i],vertices[j])!=0) {
+                M[i][j]=1; M[j][i]=1;
+            }
+            else {
+                M[i][j]=0; M[j][i]=0;
+            }
+        }
+    }
+
+    return complex_from_adjacency_matrix_truncated(M,n,k);
+}
+
 // Aggiunge al complesso simpliciale (che contiene fino ai (k-1)-simplessi) i k-simplessi specificati dalla matrice di adiacenza M n*n.
 // E' necessario che il complesso sia ordinato e k>0. M[i][j] sara' diversa da 0 se (i,j) e' nel complesso (denomino i vertici a partire da 0).
 void add_k_simplices_adjacency_matrix (SimplicialComplex* complex, int** M, int n, int k) {
@@ -153,4 +220,14 @@ int check_neighbor_adjacency_matrix (int** M, int* rows, int k, int j) {
         if (M[rows[i]][j]==0) return 0;
     }
     return 1;
+}
+
+// Controlla se a e b sono "vicini", ossia se la coppia (a,b) appartiene agli 1-simplessi. Restituisce 0 se non sono vicini, 1 se lo sono.
+int check_neighbor (SimplicialComplex* complex, int a, int b) {
+    Simplex* current=complex[1].simplices;
+    while (current!=NULL) { // scorro lungo gli 1-simplessi
+        if ((current->vertices[0]==a && current->vertices[1]==b) || (current->vertices[0]==b && current->vertices[1]==a)) return 1;
+        current=current->next;
+    }
+    return 0;
 }
