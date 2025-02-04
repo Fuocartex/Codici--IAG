@@ -21,7 +21,6 @@ bool bool_dk (int**, int, int);
 void SmithNormalForm (int**, int**, int**, int, int);
 void multiplyMatrices(int**, int**, int**, int, int, int);
 void Smith_D (int**, int, int); 
-bool boolDiag (int**, int, int);
 int checkDiagZeros (int**, int);
 void Smith_fst5mat (int**, int**, int**, int**, int**, int**, int**, int**, int, int, int);
 void SmithNormalForm5mat (int**, int**, int**, int**, int**, int, int);
@@ -249,18 +248,6 @@ bool bool_dk (int **A, int r, int k) { // r=min(m, n) e k è l'indice dell'eleme
 	return true;
 }
 
-// verifichiamo se la matrice è diagonale 
-bool boolDiag (int **A, int m, int n) { // m numero di righe, n numero di colonne
-	for (int i=0; i<m; i++) {
-		for (int j=0; j<n; j++) {
-			if (i!=j && A[i][j]!=0) { // appena trovo due indici i e j diversi tra loro per cui A[i][j] non è nullo ritorno false 
-				return false; 
-			}
-		}
-	}
-	return true; 
-}
-
 // verifico che la diagonale non abbia zeri fuori posto
 int checkDiagZeros (int **A, int r) {
 	for (int i=0; i<r; i++) {
@@ -372,7 +359,7 @@ void SmithNormalForm5mat (int **A, int **S, int **T, int **S_inv, int **T_inv, i
 		for (int j=err+1; j<r; j++) {
 			addRows(A, j, err, -1, n);
 			addRows(S, j, err, -1, m);
-			addRows(SinvT, err, j, 1, m); //quanto fatto ad S viene fatto anche ad S_inv
+			addRows(SinvT, err, j, 1, m); // presa S1 e S2, mentre S=S2*S1, S_inv=S1_inv*S2_inv quindi così come per le T per moltiplicare a destra usavo la trasposta lo stesso faccio con S_inv (tenendo conto che l'inversa fa i passaggi al contrario, quindi anzichè -1 metto 1 e inverto it e i)
 		}
 		S_inv=traspMatrix(SinvT, S_inv, m, m);
 		for (int k=err; k<r; k++) {
@@ -389,7 +376,7 @@ void SmithNormalForm5mat (int **A, int **S, int **T, int **S_inv, int **T_inv, i
 			for (int i=it+1; i<r; i++) {
 				addRows(A, i, it, -1, n);
 				addRows(S, i, it, -1, m);
-				addRows(SinvT, it, i, 1, m); // presa S1 e S2, mentre S=S2*S1, S_inv=S1_inv*S2_inv quindi così come per le T per moltiplicare a destra usavo la trasposta lo stesso faccio con S_inv (tenendo conto che l'inversa fa i passaggi al contrario, quindi anzichè -1 metto 1 e inverto it e i)
+				addRows(SinvT, it, i, 1, m);
 			}
 			S_inv=traspMatrix(SinvT, S_inv, m, m);
 			for (int iter=it; iter!=r; iter++) {
