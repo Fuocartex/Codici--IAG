@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <gmp.h>
-#include "mcd.h"
+#include "..\Include\mcd.h"
 
 void funz_f (mpz_t, mpz_t, mpz_t);
 void funz_g (mpz_t, mpz_t, mpz_t);
