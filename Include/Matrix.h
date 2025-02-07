@@ -1,30 +1,18 @@
 #pragma once
 #ifndef Matrix
 	#define Matrix
+	#include "..\Include\Smith.h"
 
+	// Funzioni per la manipolazione delle matrici
 	int** mul_matrix(int**, int, int, int**, int, int);
 	void print_matrix(int**, int, int);
 	void gauss(float**, int);
 	float det_matrix_triangular(float**, int);
-	//int** matrix_minor_NS(int**, int, int);
-	//int det_matrix(int**, int);
-	//double** gauss_iter(int**, int, int);
-	//int** inverse_matrix(int**, int, int);
-
-	/*int gcd(int a, int b) {
-		while (b != 0) {
-			int temp = b;
-			b = a % b;
-			a = temp;
-		}
-		return a > 0 ? a : -a; // Restituisce un valore positivo
-	}
-
-	// Funzione per calcolare il minimo comune multiplo (MCM)
-	int lcm(int a, int b) {
-		return (a / gcd(a, b)) * b;
-	}*/
-
+    int rank_matrix_diag(int**, int, int);
+	int** rank_base(int**, int, int);
+	int** link2matrix_same_row(int**, int, int, int**, int, int);
+	int rank_matrix(int**, int, int);
+	
 	int** mul_matrix(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		if (col1 != row2) {
 			return NULL;
@@ -192,6 +180,92 @@
 		return det;
 	}
 
-	
+    int rank_matrix_diag(int** matrix, int row, int col) {
+        int r = 0;
+        for (int i = 0; i < min(row, col); i++) {
+            if (matrix[i][i] != 0)
+                r++;
+        }
+        return r;
+    }
+
+    int** rank_base(int** M, int r, int c) {
+        int** D = NULL;
+        int** S = NULL;
+        int** T = NULL;
+
+        D = input_null(D, r, c);
+        S = input_id(S, r);
+        T = input_id(T, c);
+
+        for (int i = 0; i < r; i++) { 
+            for (int j = 0; j < c; j++) {
+                D[i][j] = M[i][j];
+            }
+        }
+
+               
+        SmithNormalForm(D, S, T, r, c);
+        int rk = rank_matrix_diag(D, r, c);
+
+		int** B = NULL;
+        B = input_null(B, c, c - rk);
+		for (int i = 0; i < c; i++) {
+			for (int j = 0; j < c - rk; j++) {
+				B[i][j] = T[i][j + rk];
+			}
+		}
+
+       
+		free(D);
+		free(S);
+		free(T);
+		return B;
+    }
+
+	int** link2matrix_same_row(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
+		int** result = NULL;
+		if (row1 != row2) {
+			printf("Errore: Le matrici non hanno lo stesso numero di righe.\n");
+			return NULL;
+		}
+		result = input_null(result, row1, col1 + col2);
+		for (int i = 0; i < row1; i++) {
+			for (int j = 0; j < col1; j++) {
+				result[i][j] = matrix1[i][j];
+			}
+			for (int j = 0; j < col2; j++) {
+				result[i][j + col1] = matrix2[i][j];
+			}
+		}
+		return result;
+	}
+
+	int rank_matrix(int** M, int r, int c) {
+        int** D = NULL;
+        int** S = NULL;
+        int** T = NULL;
+
+        D = input_null(D, r, c);
+        S = input_id(S, r);
+        T = input_id(T, c);
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                D[i][j] = M[i][j];
+            }
+        }
+
+		
+
+        SmithNormalForm(D, S, T, r, c);
+        int rk = rank_matrix_diag(D, r, c);
+
+        free(D);    
+		free(S);
+		free(T);
+
+		return rk;
+	}
 
 #endif

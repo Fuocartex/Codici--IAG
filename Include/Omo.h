@@ -2,14 +2,13 @@
 #ifndef Omo
 	#define Omo
 	#include "..\Include\Matrix.h"
-	#include "..\Include\Smith.h"
-
+	
 
 	//int** omologia(int**, int, int, int**, int, int);
 	int compare(const void*, const void*);
 	int dim_omologia(int**, int, int, int**, int, int);
 	bool is_Complex(int**, int, int, int**, int, int);
-	int rank_matrix_diag(int**, int, int);
+	
 	//int nn_zero_row(int**, int, int);
 
 	int compare(const void* a, const void* b) {
@@ -32,14 +31,7 @@
 		return true;
 	}
 
-	int rank_matrix_diag(int** matrix, int row, int col) {
-		int r = 0;
-		for (int i = 0; i < min(row, col); i++) {
-			if (matrix[i][i] != 0)
-				r++;
-		}
-		return r;
-	}
+	
 
 	int dim_omologia(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		int h = 0, ck = 0, rk = 0, rk1 = 0;

@@ -87,18 +87,22 @@
         void printComplex(SimplicialComplex* complex, int size){
 	        Simplex* app;
 		        for (int i = 0; i < size; i++) {
+					printf("%d-simplessi\n", i);
+					printf("size = %d\n", complex[i].size);
 			        app = complex[i].simplices;
-			        printf("{ ");
-			        while (app) {
-                        printf("( ");
-				        for (int j = 0; j <= i; j++)
-					        printf("%d ", app->vertices[j]);
-                        printf(")");
-				        app = app->next;
-				        if(app)
-					        printf(", ");
-			        }
-			        printf("}\n");
+                    if (app) {
+                        printf("{ ");
+                        while (app) {
+                            printf("( ");
+                            for (int j = 0; j <= i; j++)
+                                printf("%d ", app->vertices[j]);
+                            printf(")");
+                            app = app->next;
+                            if (app)
+                                printf(", ");
+                        }
+                        printf(" }\n");
+                    }
 		        }
 	        return;
         }
