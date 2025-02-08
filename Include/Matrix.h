@@ -12,6 +12,7 @@
 	int** rank_base(int**, int, int);
 	int** link2matrix_same_row(int**, int, int, int**, int, int);
 	int rank_matrix(int**, int, int);
+	char* matrix_to_json(int**, int); // Funzione per convertire una matrice in una stringa JSON per passarla a python
 	
 	int** mul_matrix(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		if (col1 != row2) {
@@ -267,5 +268,33 @@
 
 		return rk;
 	}
+
+    char* matrix_to_json(int** matrix, int n) {
+        // Calcoliamo una dimensione massima per il buffer.
+        // Per ogni numero, assumiamo al massimo 12 caratteri (inclusi segno, cifra e separatore).
+        int buffer_size = n * (n * 12 + 2) + 2;
+        char* buffer = malloc(buffer_size);
+        if (!buffer) {
+            perror("Errore nell'allocazione della memoria");
+            exit(EXIT_FAILURE);
+        }
+        int pos = 0;
+        pos += snprintf(buffer + pos, buffer_size - pos, "[");
+        for (int i = 0; i < n; i++) {
+            pos += snprintf(buffer + pos, buffer_size - pos, "[");
+            for (int j = 0; j < n; j++) {
+                pos += snprintf(buffer + pos, buffer_size - pos, "%d", matrix[i][j]);
+                if (j < n - 1) {
+                    pos += snprintf(buffer + pos, buffer_size - pos, ",");
+                }
+            }
+            pos += snprintf(buffer + pos, buffer_size - pos, "]");
+            if (i < n - 1) {
+                pos += snprintf(buffer + pos, buffer_size - pos, ",");
+            }
+        }
+        pos += snprintf(buffer + pos, buffer_size - pos, "]");
+        return buffer;
+    }
 
 #endif

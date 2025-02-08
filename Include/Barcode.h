@@ -36,6 +36,8 @@
 	M_P* create_Modulo_Persistenza(matrici_persistenza*);
 	int** matrix_phi_l1_to_l2(Simplex*, int, Simplex*, int, int);
 	int beta_i_j(M_P*, double, double, int);
+	int** beta_matrix(int, int, double, M_P*, int);
+	int** mu_matrix(int**, int, int);
 
 	matrici_persistenza* create_M_P(void) {
 		matrici_persistenza* mp1 = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
@@ -179,15 +181,21 @@
 
 
 		int** edge2 = NULL;
+		int rank2 = 0;
 		
 		if (!sc2[h + 1].size || sc2[h + 1].size == 0) {
 			
-			edge2 = input_null(edge2, sc2[h].size, sc2[h + 1].size + 1);
+			//edge2 = input_null(edge2, sc2[h].size, sc2[h + 1].size + 1);
+			//rank2 = rank_matrix(edge2, sc2[h].size, sc2[h + 1].size + 1);
+			rank2 = 0;
 			
 		}
 		else {
 			edge2 = edge_Matrix(sc2, h + 1);
+			rank2 = rank_matrix(edge2, sc2[h].size, sc2[h + 1].size);
 		}
+
+		//print_matrix(edge2, sc2[h].size, sc2[h + 1].size);
 
 		int** matrix_f = NULL;
 		matrix_f = link2matrix_same_row(matrix_j, sc2[h].size, sc1[h].size, edge2, sc2[h].size, sc2[h + 1].size);
@@ -196,7 +204,7 @@
 
 		int rank1 = rank_matrix(matrix_f, sc2[h].size, sc2[h + 1].size + sc1[h].size);
 		
-		int rank2 = rank_matrix(edge2, sc2[h].size, sc2[h + 1].size + 1);
+		
 
 		int b = rank1 - rank2;
 
@@ -212,6 +220,28 @@
 		}
 	}
 	
+	int** beta_matrix(int min, int max, double passo, M_P* mp, int h) {
+		int** matrix = NULL;
+		int n = ((max - min) / passo) + 1;
+		matrix = input_null(matrix, n + 1, n + 1);
+		int i = 0;
+		int j = 0;
+		for (i = 0; i <= n; i++) {
+			for (j = i; j <= n; j++) {
+				matrix[i][j] = beta_i_j(mp, min + i * passo, min + j * passo, h);
+			}
+		}
+		return matrix;
+	}
 	
-	
+	int** mu_matrix(int** beta, int n) {
+		int i = 0, j = 0;
+		int** matrix = NULL;
+		matrix = input_null(matrix, n , n);
+		for (i = 1; i < n; i++)
+			for (j = i + 1; j < n; j++)
+				matrix[i][j] = beta[i][j - 1] - beta[i][j] + beta[i - 1][j] - beta[i - 1][j - 1];
+		return matrix;
+	}
+
 #endif
