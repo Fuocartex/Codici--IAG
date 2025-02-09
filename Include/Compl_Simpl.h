@@ -238,19 +238,19 @@
 			//itero i vari n-simplessi
             for (int i = 0; i < row; i++)
                 matrix[i] = calloc(col, sizeof(int));
-            for (int i = 0; i < sc[n].size; i++) {
-				//itero i vari n-1-simplessi
-				//creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
-                for (int j = 0; j <= n; j++) {
-					v = creasubs(Nsimp->vertices, j, n);
-					k = base_number(Nmosimp, v, n);
-					//printf("k = %d\n", k);
-                    if (k != -1) {
-                        matrix[k][i] = pow(-1, j);
+                for (int i = 0; i < sc[n].size; i++) {
+				    //itero i vari n-1-simplessi
+				    //creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
+                    for (int j = 0; j <= n; j++) {
+					    v = creasubs(Nsimp->vertices, j, n);
+					    k = base_number(Nmosimp, v, n);
+					    //printf("k = %d\n", k);
+                        if (k != -1) {
+                            matrix[k][i] = pow(-1, j);
+                        }
                     }
-                }
-				Nsimp = Nsimp->next;
-			}
+				    Nsimp = Nsimp->next;
+			    }
 			return matrix;
 		}
 

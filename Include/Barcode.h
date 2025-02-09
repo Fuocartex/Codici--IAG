@@ -35,9 +35,9 @@
 	matrici_persistenza* create_M_P(void);
 	M_P* create_Modulo_Persistenza(matrici_persistenza*);
 	int** matrix_phi_l1_to_l2(Simplex*, int, Simplex*, int, int);
-	int beta_i_j(M_P*, double, double, int);
-	int** beta_matrix(int, int, double, M_P*, int);
-	int** mu_matrix(int**, int, int);
+	int beta_i_j(M_P*, double, double, int, int);
+	int** beta_matrix(int, int, double, M_P*, int, int);
+	int** mu_matrix(int**, int);
 
 	matrici_persistenza* create_M_P(void) {
 		matrici_persistenza* mp1 = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
@@ -95,7 +95,7 @@
 		mod_p->l_min = mp->l_min;
 		mod_p->l_max = mp->l_max;
 		mod_p->size = size;
-		mod_p->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
+		mod_p->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, size - 1);
 		mod_p->prev = NULL;
 		app = mod_p;
 
@@ -105,7 +105,7 @@
 			new = (M_P*)malloc(sizeof(M_P));
 			new->l_min = mp->l_min;
 			new->l_max = mp->l_max;
-			new->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
+			new->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, size - 1);
 			
 			new->prev = mod_p;
 			new->next = NULL;
@@ -135,11 +135,14 @@
 		return matrix;
 	}
 
-	int beta_i_j(M_P* mp, double i, double j, int h) {
+	// n è il grado del complesso
+	int beta_i_j(M_P* mp, double i, double j, int h, int n) {
 		SimplicialComplex* sc1 = NULL, * sc2 = NULL;
 		M_P* app = mp;
 
 		if (i < app->l_min)
+			return 0;
+		if(h > n)
 			return 0;
 
 		while (app && !sc2) {
@@ -160,32 +163,48 @@
 		if (!sc1[h].size || sc1[h].size == 0)
 			return 0;
 
+		//printf("sc1[h].size = %d\n", sc1[h].size);
+
 		int** phi_i_j = matrix_phi_l1_to_l2(sc1[h].simplices, sc1[h].size, sc2[h].simplices, sc2[h].size, h + 1);
 		//print_matrix(phi_i_j, sc2[h].size, sc1[h].size);
+
 		int** edge1 = NULL;
 		int** rank_edge1 = NULL;
-
+		int colonne_base_rango = 0;
 		if (h == 0) {
 			//edge1 = input_id(edge1, sc1[h].size);
 			edge1 = input_null(edge1, sc1[h].size, sc1[h].size);
 			//print_matrix(edge1, sc1[h].size, sc1[h].size);
-			rank_edge1 = rank_base(edge1, sc1[h].size, sc1[h].size);
+			rank_edge1 = input_id(rank_edge1, sc1[h].size);
+			colonne_base_rango = sc1[h].size;
 		}
 		else {
 			edge1 = edge_Matrix(sc1, h);
-			rank_edge1 = rank_base(edge1, sc1[h].size, sc1[h].size);
+			rank_edge1 = rank_base(edge1, sc1[h].size, sc1[h].size, &colonne_base_rango);
 		}
 
+		if (!rank_edge1)
+			return 0;
+
 		int** matrix_j = NULL;
-		matrix_j = mul_matrix(phi_i_j, sc2[h].size, sc1[h].size, rank_edge1, sc1[h].size, sc1[h].size);
-
-
-		int** edge2 = NULL;
-		int rank2 = 0;
 		
-		if (!sc2[h + 1].size || sc2[h + 1].size == 0) {
+		matrix_j = mul_matrix(phi_i_j, sc2[h].size, sc1[h].size, rank_edge1, sc1[h].size, colonne_base_rango);
+		
+		int** edge2 = NULL;
+		int rank2 = 0, row = 0, col = 0;
+		
+		if (h == n)
+		{
+			edge2 = input_null(edge2, sc2[h].size, sc2[h].size);
+			row = sc2[h].size;
+			col = sc2[h].size;
+			rank2 = 0;
+		}
+		else if (!sc2[h + 1].size || sc2[h + 1].size == 0) {
 			
-			//edge2 = input_null(edge2, sc2[h].size, sc2[h + 1].size + 1);
+			edge2 = input_null(edge2, sc2[h].size, sc2[h].size);
+			row = sc2[h].size;
+			col = sc2[h].size;
 			//rank2 = rank_matrix(edge2, sc2[h].size, sc2[h + 1].size + 1);
 			rank2 = 0;
 			
@@ -193,16 +212,17 @@
 		else {
 			edge2 = edge_Matrix(sc2, h + 1);
 			rank2 = rank_matrix(edge2, sc2[h].size, sc2[h + 1].size);
+			row = sc2[h].size;
+			col = sc2[h + 1].size;
 		}
-
-		//print_matrix(edge2, sc2[h].size, sc2[h + 1].size);
+		
 
 		int** matrix_f = NULL;
-		matrix_f = link2matrix_same_row(matrix_j, sc2[h].size, sc1[h].size, edge2, sc2[h].size, sc2[h + 1].size);
-			
-		//print_matrix(matrix_f, sc2[h].size, sc2[h + 1].size + sc1[h].size);
+		matrix_f = link2matrix_same_row(matrix_j, sc2[h].size, colonne_base_rango, edge2, row, col);
+		
+		
 
-		int rank1 = rank_matrix(matrix_f, sc2[h].size, sc2[h + 1].size + sc1[h].size);
+		int rank1 = rank_matrix(matrix_f, sc2[h].size, col + colonne_base_rango);
 		
 		
 
@@ -215,12 +235,13 @@
 	void print1(M_P* a) {
 		M_P* mp = a;
 		while (mp) {
-			printComplex(mp->sc, 3);
+			printComplex(mp->sc, 2);
 			mp = mp->next;
 		}
 	}
 	
-	int** beta_matrix(int min, int max, double passo, M_P* mp, int h) {
+	//k è il grado del complesso
+	int** beta_matrix(int min, int max, double passo, M_P* mp, int h, int k) {
 		int** matrix = NULL;
 		int n = ((max - min) / passo) + 1;
 		matrix = input_null(matrix, n + 1, n + 1);
@@ -228,7 +249,7 @@
 		int j = 0;
 		for (i = 0; i <= n; i++) {
 			for (j = i; j <= n; j++) {
-				matrix[i][j] = beta_i_j(mp, min + i * passo, min + j * passo, h);
+				matrix[i][j] = beta_i_j(mp, min + i * passo, min + j * passo, h, k);
 			}
 		}
 		return matrix;

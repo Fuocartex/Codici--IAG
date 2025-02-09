@@ -6,18 +6,20 @@ int main()
 	matrici_persistenza* mp = NULL;
 	mp = create_M_P();
 	M_P* mod_p = create_Modulo_Persistenza(mp);
-	//print1(mod_p);
+	print1(mod_p);
 
-	int h = beta_i_j(mod_p, 2, 4, 2);
+	int h = beta_i_j(mod_p, 11.5, 11.5, 0, 1);
+
+	printf("beta_i_j = %d\n", h);
 
 	int** matrix = NULL;
-	matrix = beta_matrix(0, 11, 0.5, mod_p, 2);
+	matrix = beta_matrix(0, 11, 0.5, mod_p, 0, 1);
 
-	print_matrix(matrix, 24, 24);
+	//print_matrix(matrix, 24, 24);
 
 	int** mu = NULL;
 	mu = mu_matrix(matrix, 24);
-	printf("mu\n");
+	//printf("mu\n");
 	print_matrix(mu, 24, 24);
 	//printf("beta_i_j = %d\n", h);
 
@@ -52,6 +54,6 @@ int main()
         free(matrix[i]);
     }
     free(matrix);
-	
+
 	return 0;
 }

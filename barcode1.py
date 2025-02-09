@@ -3,9 +3,9 @@ import json
 import matplotlib.pyplot as plt
 
 
-print("Argomenti ricevuti:", sys.argv)
-
-def plot_barcode(matrix):
+"""print("Argomenti ricevuti:", sys.argv)
+"""
+def plot_barcode(matrix, lambda_min, h):
     """
     Data una matrice quadrata (lista di liste) che rappresenta 
     il modulo di persistenza, estrae gli intervalli e disegna il barcode.
@@ -31,9 +31,9 @@ def plot_barcode(matrix):
             nonzero_indices = [j for j, val in enumerate(row) if val != 0]
             nonzero_indices.sort(reverse=True)
             
-            birth = i + 1  # riga corrente in 1-indexing
+            birth = lambda_min + i*h   # riga corrente in 1-indexing
             for j in nonzero_indices:
-                death = j + 1  # colonna in 1-indexing
+                death = lambda_min + j*h  # colonna in 1-indexing
                 intervals.append((birth, death))
     
     # Ordiniamo gli intervalli per birth (e per death in ordine decrescente se la riga è la stessa)
@@ -65,9 +65,18 @@ def plot_barcode(matrix):
     ax.set_xlabel("x (indice)")
     ax.set_ylabel("Quota (livello)")
     ax.set_title("Barcode del modulo di persistenza")
-    ax.set_xlim(0, n + 1)
+    # Impostiamo i limiti dell'asse x:
+    # da un po' sotto lambda_min fino a lambda_min + n*h (o anche oltre, se necessario)
+    ax.set_xlim(lambda_min, lambda_min + (n-1) * h)
+    
+    # Impostiamo i tick delle ascisse: ogni riga corrisponde a un tick
+    xticks = [lambda_min + i * h for i in range(n)]
+    ax.set_xticks(xticks)
+    ax.set_xticklabels([f"{x:.2f}" for x in xticks])
     max_level = max((lev for (_, _, lev) in assigned_intervals), default=1)
     ax.set_ylim(0, max_level + 1)
+
+    plt.grid(axis='x', linestyle='--', alpha=0.6)
     plt.show()
 
 def main():
@@ -79,6 +88,8 @@ def main():
         except json.JSONDecodeError as e:
             print("Errore nella decodifica della matrice:", e)
             sys.exit(1)
+        lambda_min = float(sys.argv[2])  # Valore minimo della scala delle ascisse
+        h = float(sys.argv[3])  # Passo della scala delle ascisse
     else:
         # Matrice di default (se non viene passato alcun argomento)
         matrix = [
@@ -88,7 +99,7 @@ def main():
             [0, 0, 0, 0, 0],
             [0, 0, 1, 1, 0]
         ]
-    plot_barcode(matrix)
+    plot_barcode(matrix, lambda_min, h)
 
 if __name__ == '__main__':
     main()

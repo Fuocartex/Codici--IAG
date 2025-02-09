@@ -9,7 +9,7 @@
 	void gauss(float**, int);
 	float det_matrix_triangular(float**, int);
     int rank_matrix_diag(int**, int, int);
-	int** rank_base(int**, int, int);
+	int** rank_base(int**, int, int, int*);
 	int** link2matrix_same_row(int**, int, int, int**, int, int);
 	int rank_matrix(int**, int, int);
 	char* matrix_to_json(int**, int); // Funzione per convertire una matrice in una stringa JSON per passarla a python
@@ -190,7 +190,7 @@
         return r;
     }
 
-    int** rank_base(int** M, int r, int c) {
+    int** rank_base(int** M, int r, int c, int *n) {
         int** D = NULL;
         int** S = NULL;
         int** T = NULL;
@@ -210,6 +210,12 @@
         int rk = rank_matrix_diag(D, r, c);
 
 		int** B = NULL;
+		if (c - rk == 0) {
+			free(D);
+			free(S);
+			free(T);
+			return B;
+		}
         B = input_null(B, c, c - rk);
 		for (int i = 0; i < c; i++) {
 			for (int j = 0; j < c - rk; j++) {
@@ -217,10 +223,12 @@
 			}
 		}
 
+		print_matrix(B, c, c - rk);
        
 		free(D);
 		free(S);
 		free(T);
+		*n = c - rk;
 		return B;
     }
 
