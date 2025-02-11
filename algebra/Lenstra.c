@@ -7,18 +7,21 @@ Factor* fattorizza_Lenstra(mpz_t,Factor*);
 int main () {
     mpz_t n;
     mpz_init(n);
+    int iter=20;
     printf("Inserisci il numero da fattorizzare:\n");
     gmp_scanf("%Zd",n);
 
     Factor* fattori=NULL;
-    fattori=fattorizza_Lenstra(n,fattori);
+    // DA SOSTITUIRE CON IL TEST DI MILLER-RABIN SCRITTO DA NOI
+    if (mpz_probab_prime_p(n,iter)!=0) fattori=cons(fattori,n,1);
+    else fattori=fattorizza_Lenstra(n,fattori);
     print_factors(fattori);
 
     mpz_clear(n);
     return 0;
 }
 
-// fattorizza (tramite l'algoritmo di Lenstra) in maniera ricorsiva l'intero n, aggiungendo i fattori trovati alla lista
+// fattorizza (tramite l'algoritmo di Lenstra) in maniera ricorsiva l'intero (composto) n, aggiungendo i fattori trovati alla lista
 Factor* fattorizza_Lenstra(mpz_t n, Factor* fattori) {
     int iter=20; // iterazioni da fare nel test di Miller-Rabin
 
