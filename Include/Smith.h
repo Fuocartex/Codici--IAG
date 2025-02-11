@@ -21,7 +21,6 @@ bool bool_dk (int**, int, int);
 void SmithNormalForm (int**, int**, int**, int, int);
 void multiplyMatrices(int**, int**, int**, int, int, int);
 void Smith_D (int**, int, int); 
-bool boolDiag (int**, int, int);
 int checkDiagZeros (int**, int);
 void Smith_fst5mat (int**, int**, int**, int**, int**, int**, int**, int**, int, int, int);
 void SmithNormalForm5mat (int**, int**, int**, int**, int**, int, int);
@@ -249,18 +248,7 @@ bool bool_dk (int **A, int r, int k) { // r=min(m, n) e k è l'indice dell'eleme
 	return true;
 }
 
-// verifichiamo se la matrice è diagonale 
-bool boolDiag (int **A, int m, int n) { // m numero di righe, n numero di colonne
-	for (int i=0; i<m; i++) {
-		for (int j=0; j<n; j++) {
-			if (i!=j && A[i][j]!=0) { // appena trovo due indici i e j diversi tra loro per cui A[i][j] non è nullo ritorno false 
-				return false; 
-			}
-		}
-	}
-	return true; 
-}
-
+// verifico che la diagonale non abbia zeri fuori posto
 int checkDiagZeros (int **A, int r) {
 	for (int i=0; i<r; i++) {
 		if (A[i][i]==0) { // appena trovo un elemento diagonale nullo verifico i successivi 
@@ -284,33 +272,35 @@ void SmithNormalForm (int **A, int **S, int **T, int m, int n) {
 	
 	int r=my_min(m, n);
 	
-	// se la matrice in input è gia diagonale non viene modificata da Smith_fst, quindi se avesse zero in mezzo alla diagonale e non in fondo, nel momento in cui verifico se gli elementi in diagonale si dividono consecutivamente lo zero causa problemi, motivo per cui se la matrice in input diagonale è di tale forma sommo a tutte le righe le successive, in questo modo Smith_fst modifica la matrice in maniera corretta e questo problema è evitato 
-	if (boolDiag(A, m, n)) { // se la matrice in input è diagonale 
-		int err=checkDiagZeros(A, r);
-		if (err!=r) { // verifico che abbia gli zeri tutti in fondo, in caso contrario 
-			for (int j=err+1; j<r; j++) { // sommo alla riga err (con lo zero fuori posto) le righe successive j
-				addRows(A, j, err, -1, n);
-				addRows(S, j, err, -1, m);
-			}
-		}
-	}
-	
 	for (int k=0; k!=r; k++) {
 		Smith_fst(A, S, T, At, Tt, m, n, k); // prima raggiungo la forma diagonale 
 	}		
 	
+	// verifico che la forma diagonale raggiunta abbia gli zeri tutti in fondo altrimenti riapplico smith_fst dopo aver fatto delle modifiche
+	int err=checkDiagZeros(A, r);
+	if (err!=r) { // se il check è fallito, ossia ci sono degli zeri fuori posto
+		for (int j=err+1; j<r; j++) { // sommo alla riga err (con lo zero fuori posto) le righe successive j
+			addRows(A, j, err, -1, n);
+			addRows(S, j, err, -1, m);
+		}
+	
+		for (int k=err; k<r; k++) {
+			Smith_fst(A, S, T, At, Tt, m, n, k); // prima raggiungo la forma diagonale 
+		}
+	}
+	
+	// una volta raggiunta una forma diagonale con gli zeri in fondo verifico che la forma sia effettivamente di Smith
 	for (int it=0; it<r; it++) {
-		if (A[it][it]==0) { // se l'elemento diagonale è nullo lo sono anche i successivi (per definizione di Smith_fst e da quanto fatto da boolDiag e check DiagZeros)   
+		if (A[it][it]==0) { // se l'elemento diagonale è nullo lo sono anche i successivi (per quanto fatto da checkDiagZeros e la riapplicazione di Smith_fst)   
 			break; // quindi posso uscire dal for perchè la verifica è completa
 		}
-		//if (it<r-1 && A[it+1][it+1]%A[it][it]!=0) {
 		if (!bool_dk(A, r, it)) { // nel caso non sia di Smith 
 			for (int i=it+1; i<r; i++) { // sommo alla riga it tutte le righe successive i  
 				addRows(A, i, it, -1, n);
 				addRows(S, i, it, -1, m);
 			}
-			for (int iter=it; iter!=r; iter++) {
-				Smith_fst(A, S, T, At, Tt, m, n, iter); // e riapplico Smith così da ottenere in alto il mcm dei d_i
+			for (int iter=it; iter<r; iter++) {
+				Smith_fst(A, S, T, At, Tt, m, n, iter); // e riapplico Smith (dalla riga it in poi) così da ottenere in alto il mcm dei d_i
 			}
 		}
 	}
@@ -359,20 +349,23 @@ void SmithNormalForm5mat (int **A, int **S, int **T, int **S_inv, int **T_inv, i
 	
 	int r=my_min(m, n);
 	
-	if (boolDiag(A, m, n)) {
-		int err=checkDiagZeros(A, r);
-		if (err!=r) { 
-			for (int j=err+1; j<r; j++) {
-				addRows(A, j, err, -1, n);
-				addRows(S, j, err, -1, m);
-				addRows(S_inv, j, err, 1, m); //quanto fatto ad S viene fatto anche ad S_inv
-			}
-		}
-	}
-	
-	for (int k=0; k!=r; k++) {
+	for (int k=0; k<r; k++) {
 		Smith_fst5mat(A, S, T, S_inv, T_inv, At, Tt, SinvT, m, n, k); 
 	}	
+	
+	int err=checkDiagZeros(A, r);
+	if (err!=r) { 
+		SinvT=traspMatrix(S_inv, SinvT, m, m);
+		for (int j=err+1; j<r; j++) {
+			addRows(A, j, err, -1, n);
+			addRows(S, j, err, -1, m);
+			addRows(SinvT, err, j, 1, m); // presa S1 e S2, mentre S=S2*S1, S_inv=S1_inv*S2_inv quindi così come per le T per moltiplicare a destra usavo la trasposta lo stesso faccio con S_inv (tenendo conto che l'inversa fa i passaggi al contrario, quindi anzichè -1 metto 1 e inverto it e i)
+		}
+		S_inv=traspMatrix(SinvT, S_inv, m, m);
+		for (int k=err; k<r; k++) {
+			Smith_fst5mat(A, S, T, S_inv, T_inv, At, Tt, SinvT, m, n, k); 
+		}
+	}
 	
 	for (int it=0; it<r; it++) {
 		if (A[it][it]==0) {
@@ -383,7 +376,7 @@ void SmithNormalForm5mat (int **A, int **S, int **T, int **S_inv, int **T_inv, i
 			for (int i=it+1; i<r; i++) {
 				addRows(A, i, it, -1, n);
 				addRows(S, i, it, -1, m);
-				addRows(SinvT, it, i, 1, m); // presa S1 e S2, mentre S=S2*S1, S_inv=S1_inv*S2_inv quindi così come per le T per moltiplicare a destra usavo la trasposta lo stesso faccio con S_inv (tenendo conto che l'inversa fa i passaggi al contrario, quindi anzichè -1 metto 1 e inverto it e i)
+				addRows(SinvT, it, i, 1, m);
 			}
 			S_inv=traspMatrix(SinvT, S_inv, m, m);
 			for (int iter=it; iter!=r; iter++) {
