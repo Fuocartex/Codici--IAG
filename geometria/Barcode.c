@@ -4,14 +4,14 @@ int main()
 {
     int** m = NULL;
 	int* k = 0;
-	double* l_max = NULL;
+	double* l_max = malloc(sizeof(double));
 	m = input_point(&k);
 	int n = k;
     double** d = NULL;
 	
     d = distance_matrix(m, n);
 	
-	/*printf("Matrice delle distanze:\n");
+	printf("Matrice delle distanze:\n");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
@@ -19,11 +19,10 @@ int main()
 			printf("%lf ", d[i][j]);
 		}
 		printf("\n");
-	}*/	
+	}
 	matrici_persistenza* mp = NULL;
-	mp = create_matrix_persistenza(d, n, &l_max);
+	mp = create_matrix_persistenza(d, n, l_max);
 
-	
 	//matrici_persistenza* mp = NULL;
 	//mp = create_M_P();
 	M_P* mod_p = create_Modulo_Persistenza(mp);
@@ -34,15 +33,17 @@ int main()
 	//printf("beta_i_j = %d\n", h);
 
 	int** matrix = NULL;
-	printf("l_max = %lf\n", l_max);
-	matrix = beta_matrix(0, 2, 0.5, mod_p, 0, 2);
-	int dim = 2 / 0.5 + 1;
-	print_matrix(matrix, dim, dim);
+	//printf("l_max = %lf\n", l_max[0]);
+	int lambda = ceil(l_max[0]);
+	//printf("l_max = %d\n", lambda);
+	matrix = beta_matrix(0, lambda, 0.5, mod_p, 1, 1);
+	int dim = lambda / 0.5 + 2;
+	//print_matrix(matrix, dim, dim);
 
 	int** mu = NULL;
 	mu = mu_matrix(matrix, dim);
 	//printf("mu\n");
-	print_matrix(mu, dim, dim);
+	//print_matrix(mu, dim, dim);
 	//printf("beta_i_j = %d\n", h);
 
 	char* json_matrix = matrix_to_json(mu, dim);

@@ -100,7 +100,7 @@
 		mod_p->l_min = mp->l_min;
 		mod_p->l_max = mp->l_max;
 		mod_p->size = size;
-		mod_p->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
+		mod_p->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, 1);
 		mod_p->prev = NULL;
 		app = mod_p;
 
@@ -110,7 +110,7 @@
 			new = (M_P*)malloc(sizeof(M_P));
 			new->l_min = mp->l_min;
 			new->l_max = mp->l_max;
-			new->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
+			new->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, 1);
 			
 			new->prev = mod_p;
 			new->next = NULL;
@@ -165,8 +165,6 @@
 		if (!sc2)
 			return 0;
 
-		printf("i = %lf, j = %lf\n", i, j);
-
 		if (sc1[h].size == 0)
 			return 0;
 
@@ -187,7 +185,7 @@
 		}
 		else {
 			edge1 = edge_Matrix(sc1, h);
-			rank_edge1 = rank_base(edge1, sc1[h].size, sc1[h].size, &colonne_base_rango);
+			rank_edge1 = rank_base(edge1, sc1[h - 1].size, sc1[h].size, &colonne_base_rango);
 		}
 
 		if (!rank_edge1)
@@ -342,8 +340,11 @@
 			
 		qsort(lambda, size, sizeof(double), compare_double);
 		
+		printf("lambda\n");
+		for (int i = 0; i < size; i++)
+			printf("%lf ", lambda[i]);
 
-		while (l < lambda[size - 1] || iter < size - 1) {
+		while (l < lambda[size - 1] || iter < size) {
 			l += 0.5;
 				
 			if (lambda[iter] == app) {
@@ -367,10 +368,8 @@
 		matrici_persistenza* mp = NULL, * app = NULL, * new = NULL;
 		int size = (n*(n-1)/2);
 		double* lambda = find_lambda_value(matrix, n);
-		printf("Lambda\n");
-		for (int i = 0; i < size; i++)
-			printf("%lf ", lambda[i]);
-
+		
+		
 		int i = 0;
 		while (lambda[i] == 0)
 			i++;
@@ -379,14 +378,12 @@
 		mp->l_max = lambda[i]-0.5;
 		mp->size = n;
 		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_max);
-		printf("l_min = %lf\n", mp->l_min);
-		printf("mp->l_max = %lf\n", mp->l_max);
-
+		
 		mp->prev = NULL;
 		mp->next = NULL;
 		app = mp;
 		i++;
-		printf("i = %d\n", i);
+		
 		while (i < size)
 		{
 			new = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
@@ -408,23 +405,23 @@
 			mp->next = new;
 			mp = new;
 			i++;
-			printf("l_min = %lf\n", mp->l_min);
-			printf("mp->l_max = %lf\n", mp->l_max);
+			
 		}
 
 		new = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
 		new->l_min = mp->l_max + 0.5;
 		new->l_max = new->l_min;
 		new->size = n;
+		printf("l_max = %lf\n", new->l_min);
 		new->matrix_d = zero_one_matrix(matrix, n, new->l_max);
-		
+		printf("Matrice n");
+		print_matrix(new->matrix_d, n, n);
 		new->prev = mp;
 		new->next = NULL;
 		mp->next = new;
 		mp = new;
-		*l = mp->l_max;
-		printf("l_min = %lf\n", mp->l_min);
-		printf("l_max = %lf\n", *l);
+		l[0] = mp->l_max;
+		
 		return app;
 	}
 

@@ -34,7 +34,11 @@ def plot_barcode(matrix, lambda_min, h):
             birth = lambda_min + i*h   # riga corrente in 1-indexing
             for j in nonzero_indices:
                 death = lambda_min + j*h  # colonna in 1-indexing
-                intervals.append((birth, death))
+                num_segments = row[j]
+                # Aggiungiamo tante istanze quanto il valore in cella
+                for _ in range(num_segments):
+                    intervals.append((birth, death))
+
     
     # Ordiniamo gli intervalli per birth (e per death in ordine decrescente se la riga è la stessa)
     intervals.sort(key=lambda x: (x[0], -x[1]))
@@ -47,7 +51,7 @@ def plot_barcode(matrix, lambda_min, h):
         assigned_level = None
         # Cerchiamo il livello l più basso per cui l'intervallo corrente non si sovrappone
         for l, last_death in enumerate(levels):
-            if last_death <= birth:
+            if last_death < birth:
                 assigned_level = l
                 break
         if assigned_level is None:
