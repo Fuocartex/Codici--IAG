@@ -3,47 +3,156 @@
 #include <gmp.h>
 #include "mcd.h"
 
-
+int basi_primi (mpz_t, mpz_t, mpz_t, unsigned long int);
 
 // funzioni ausiliarie
-mpz_t* cont_frac_sqrt_mod(mpz_t, unsigned long int);
+mpz_t* cont_frac_sqrt_mod(mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, unsigned long int);
+void cont_frac_next_term(mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
+mpz_t* squares_mod(mpz_t*, unsigned long int, mpz_t);
 void riduci_mod_min(mpz_t, mpz_t);
 
-// Restituisce i primi k>0 numeratori dell'approssimazione in frazione continua di sqrt(n) modulo n, espressi con valore assoluto minimo.
-mpz_t* cont_frac_sqrt_mod(mpz_t n, unsigned long int k) {
-    int i;
-    mpz_t a,beta,gamma,temp;
-    mpz_inits(a,beta,gamma,temp,NULL);
-    mpz_t* b=(mpz_t*)malloc(k*sizeof(mpz_t));
-    for (i=0;i<k;i++) mpz_init(b[i]);
+// Fattorizza l'intero positivo n utilizzando l'algoritmo delle basi di primi di Pomerance: se riesce restituisce 1 e salva in
+// d un divisore proprio di n, altrimenti restituisce 0. Bound rappresenta il massimo valore che possono assumere i primi nella base,
+// iter il numero di iterazioni eseguite dall'algoritmo.
+int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
+    int i,j;
 
-    // dati iniziali delle relazioni ricorsive
+    // Costruisco una base formata da -1, 2 e tutti i numeri dispari da 3 fino a bound (non saranno tutti primi; e' una scelta semplice ma non ottimale)
+    unsigned long int base_length = mpz_get_ui(bound);
+    base_length=(base_length-1)/2 +2;
+    mpz_t *base = (mpz_t*)malloc(base_length*sizeof(mpz_t));
+    mpz_init_set_si(base[0],-1);
+    mpz_init_set_si(base[1],2);
+    for (i=2; i<base_length; i++) {
+        mpz_init_set_si(base[i],2*i-1);
+    }
+
+    // la matrice M ((l+1)*l, con l=base_length) conterra', nell'entrata M[i][j], l'esponente massimo exp tale che base[j]^exp divide b[i]
+    int** M=malloc((base_length+1)*sizeof(int));
+    for (i=0; i<base_length+1; i++) M[i]=malloc(base_length*sizeof(int));
+    for (i=0; i<base_length+1; i++) for (j=0; j<base_length; j++) M[i][j]=0; // inizializzo a 0
+
+    // dati iniziali delle relazioni ricorsive per lo sviluppo in frazione continua di radice di n
+    mpz_t a,beta,gamma,bmeno1,bmeno2;
+    mpz_inits(a,beta,gamma,bmeno1,bmeno2,NULL);
     mpz_sqrt(a,n);
     mpz_neg(beta,a);
     mpz_set_ui(gamma,1);
-    mpz_set(b[0],a);
+    mpz_set_ui(bmeno1,1);
+    mpz_set_ui(bmeno2,0);
+
+    unsigned long int it=0;
+    while (it<iter) {
+        // costruisco i b_i con quadrato piccolo mod n: ne voglio base_length+1 cosi' da assicurarmi almeno una combinazione lineare di righe
+        // nulla nella matrice che costruiro' dopo
+        mpz_t* b=cont_frac_sqrt_mod(n,bmeno1,bmeno2,a,beta,gamma,base_length+1);
+        mpz_t* squares=squares_mod(b,base_length+1,n);
+
+        // calcolo la matrice degli esponenti massimi dei primi che dividono ciascun quadrato
+        for (i=0; i<base_length+1; i++) {
+            // primo termine (corrisponde a -1 nella base)
+            if (mpz_cmp_si(squares[i],0)<0) {
+                M[i][0]=1;
+                mpz_neg(squares[i],squares[i]);
+            }
+
+            // secondo termine (corrisponde a 2 nella base)
+            while (mpz_divisible_ui_p(squares[i],2)) {
+                mpz_divexact_ui(squares[i],squares[i],2);
+                M[i][1]++;
+            }
+
+            // termini rimanenti (corrispondono ai dispari (2*j -1) nella base)
+            for (j=2; j<base_length; j++) {
+                while (mpz_divisible_ui_p(squares[i],2*j-1)) {
+                    mpz_divexact_ui(squares[i],squares[i],2*j-1);
+                    M[i][j]++;
+                }
+            }
+
+            // controllo se il quadrato e' stato completamente scomposto nella base; in caso contrario lo sostituisco con un nuovo b
+            // (e il suo quadrato) e ritento la scomposizione
+            if (mpz_cmp_si(squares[i],1)!=0) {
+                cont_frac_next_term(b[i],n,bmeno1,bmeno2,a,beta,gamma);
+                mpz_mul(squares[i],b[i],b[i]);
+                riduci_mod_min(squares[i],n);
+                i--; // attenzione: in questo modo il ciclo for su i potrebbe non terminare: aggiungiamo una qualche condizione?
+            }
+        }
+
+
+
+        ////// da proseguire qui ///////    (controllare colonne nulle, creare matrice booleana riducendo M modulo 2, Gauss, cercare congruenze ...)
+
+
+
+
+        for (i=0; i<base_length+1; i++) mpz_clear(b[i]);
+        for (i=0; i<base_length+1; i++) mpz_clear(squares[i]);
+        it++;
+    }
+
+    // se sono arrivato qui ho completato tutte le iterazioni senza trovare un divisore: fallimento.
+
+    for (i=0; i<base_length+1; i++) free(M[i]); free(M);
+    for (i=0; i<base_length; i++) mpz_clear(base[i]); free(base);
+    mpz_clears(a,beta,gamma,bmeno1,bmeno2,NULL);
+    return 0;
+}
+
+// Restituisce k>0 numeratori dell'approssimazione in frazione continua di sqrt(n) modulo n, espressi con valore assoluto minimo, a partire
+// dai due numeratori precedenti e dai corrispondenti valori di a, beta, gamma (che vengono modificati durante l'esecuzione).
+mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t beta, mpz_t gamma, unsigned long int k) {
+    int i;
+    mpz_t sqrt_n,temp;
+    mpz_inits(sqrt_n,temp,NULL);
+    mpz_sqrt(sqrt_n,n);
+    mpz_t* b=(mpz_t*)malloc(k*sizeof(mpz_t));
+    for (i=0;i<k;i++) mpz_init(b[i]);
 
     // esplicito i primi due termini (poiché utilizzano dati iniziali specifici su b_-1 e b_-2)
-    if (k==1) return b;
 
     mpz_mul(temp,beta,beta);
-    mpz_sub(gamma,n,temp); // aggiornato gamma
-    mpz_sub(temp,a,beta);
+    mpz_sub(temp,n,temp);
+    mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
+    mpz_sub(temp,sqrt_n,beta);
+    mpz_fdiv_q(a,temp,gamma); // aggiornato a
+    mpz_mul(temp,a,gamma);
+    mpz_add(temp,temp,beta);
+    mpz_neg(beta,temp); // aggiornato beta
+    mpz_mul(temp,a,bmeno1);
+    mpz_add(b[0],temp,bmeno2);
+    riduci_mod_min(b[0],n); // aggiornato b[0]
+
+    if (k==1) {
+        mpz_set(bmeno2,bmeno1);
+        mpz_set(bmeno1,b[0]);
+        return b;
+    }
+
+    mpz_mul(temp,beta,beta);
+    mpz_sub(temp,n,temp);
+    mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
+    mpz_sub(temp,sqrt_n,beta);
     mpz_fdiv_q(a,temp,gamma); // aggiornato a
     mpz_mul(temp,a,gamma);
     mpz_add(temp,temp,beta);
     mpz_neg(beta,temp); // aggiornato beta
     mpz_mul(temp,a,b[0]);
-    mpz_add_ui(b[1],temp,1);
-    riduci_mod_min(b[1],n);
+    mpz_add(b[1],temp,bmeno1);
+    riduci_mod_min(b[1],n); // aggiornato b[1]
     
-    if (k==2) return b;
+    if (k==2) {
+        mpz_set(bmeno2,b[0]);
+        mpz_set(bmeno1,b[1]);
+        return b;
+    }
 
     for (i=2; i<k; i++) {
         mpz_mul(temp,beta,beta);
         mpz_sub(temp,n,temp);
         mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
-        mpz_sub(temp,b[0],beta);
+        mpz_sub(temp,sqrt_n,beta);
         mpz_fdiv_q(a,temp,gamma); // aggiornato a
         mpz_mul(temp,a,gamma);
         mpz_add(temp,temp,beta);
@@ -52,10 +161,49 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, unsigned long int k) {
         mpz_add(b[i],temp,b[i-2]);
         riduci_mod_min(b[i],n); // aggiornato b[i]
     }
+    mpz_set(bmeno2,b[k-2]);
+    mpz_set(bmeno1,b[k-1]);
     
-    mpz_clears(a,beta,gamma,temp,NULL);
-    for (i=0;i<k;i++) mpz_clear(b[i]);
+    mpz_clears(sqrt_n,temp,NULL);
     return b;
+}
+
+// salva in b il termine successivo dello sviluppo in frazione continua di sqrt(n) modulo n, espresso con valore assoluto minimo, a partire
+// dai due numeratori precedenti e dai corrispondenti valori di a, beta, gamma (che vengono modificati durante l'esecuzione).
+void cont_frac_next_term(mpz_t b, mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t beta, mpz_t gamma) {
+    mpz_t sqrt_n,temp;
+    mpz_inits(sqrt_n,temp,NULL);
+    mpz_sqrt(sqrt_n,n);
+
+    mpz_mul(temp,beta,beta);
+    mpz_sub(temp,n,temp);
+    mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
+    mpz_sub(temp,sqrt_n,beta);
+    mpz_fdiv_q(a,temp,gamma); // aggiornato a
+    mpz_mul(temp,a,gamma);
+    mpz_add(temp,temp,beta);
+    mpz_neg(beta,temp); // aggiornato beta
+    mpz_mul(temp,a,bmeno1);
+    mpz_add(b,temp,bmeno2);
+    riduci_mod_min(b,n); // aggiornato b
+    mpz_set(bmeno2,bmeno1);
+    mpz_set(bmeno1,b); // aggiornati i termini precedenti
+
+    mpz_clears(sqrt_n,temp,NULL);
+    return;
+}
+
+// restituisce un array con i quadrati degli elementi nell'array in input (lungo k) modulo n, espressi con valore assoluto minimo.
+mpz_t* squares_mod(mpz_t* array, unsigned long int k, mpz_t n) {
+    int i;
+    mpz_t* squares=(mpz_t*)malloc(k*sizeof(mpz_t));
+    for (i=0;i<k;i++){
+        mpz_init(squares[i]);
+        mpz_mul(squares[i],array[i],array[i]);
+        riduci_mod_min(squares[i],n);
+    }
+
+    return squares;
 }
 
 // riduce a modulo n esprimendolo con valore assoluto minimo (potra' essere positivo o negativo, ma avra' abs(a)<= n/2).
