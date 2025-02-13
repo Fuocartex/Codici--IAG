@@ -36,9 +36,15 @@
     <ClInclude Include="Include\Smith.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Complesso_da_1_simplessi.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Barcode.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="geometria\Omologie.c">
+    <ClCompile Include="geometria\Barcode.c">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

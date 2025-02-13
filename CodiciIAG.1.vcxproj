@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Barcode.h" />
     <ClInclude Include="Include\Bezout.h" />
+    <ClInclude Include="Include\Complesso_da_1_simplessi.h" />
     <ClInclude Include="Include\Compl_Simpl.h" />
     <ClInclude Include="Include\Create_Factor.h" />
     <ClInclude Include="Include\Fermat.h" />
@@ -28,7 +30,7 @@
     <ClInclude Include="Include\Smith.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="geometria\Omologie.c" />
+    <ClCompile Include="geometria\Barcode.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

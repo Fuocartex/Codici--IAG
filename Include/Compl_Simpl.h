@@ -87,18 +87,22 @@
         void printComplex(SimplicialComplex* complex, int size){
 	        Simplex* app;
 		        for (int i = 0; i < size; i++) {
+					printf("%d-simplessi\n", i);
+					printf("size = %d\n", complex[i].size);
 			        app = complex[i].simplices;
-			        printf("{ ");
-			        while (app) {
-                        printf("( ");
-				        for (int j = 0; j <= i; j++)
-					        printf("%d ", app->vertices[j]);
-                        printf(")");
-				        app = app->next;
-				        if(app)
-					        printf(", ");
-			        }
-			        printf("}\n");
+                    if (app) {
+                        printf("{ ");
+                        while (app) {
+                            printf("( ");
+                            for (int j = 0; j <= i; j++)
+                                printf("%d ", app->vertices[j]);
+                            printf(")");
+                            app = app->next;
+                            if (app)
+                                printf(", ");
+                        }
+                        printf(" }\n");
+                    }
 		        }
 	        return;
         }
@@ -234,19 +238,19 @@
 			//itero i vari n-simplessi
             for (int i = 0; i < row; i++)
                 matrix[i] = calloc(col, sizeof(int));
-            for (int i = 0; i < sc[n].size; i++) {
-				//itero i vari n-1-simplessi
-				//creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
-                for (int j = 0; j <= n; j++) {
-					v = creasubs(Nsimp->vertices, j, n);
-					k = base_number(Nmosimp, v, n);
-					//printf("k = %d\n", k);
-                    if (k != -1) {
-                        matrix[k][i] = pow(-1, j);
+                for (int i = 0; i < sc[n].size; i++) {
+				    //itero i vari n-1-simplessi
+				    //creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
+                    for (int j = 0; j <= n; j++) {
+					    v = creasubs(Nsimp->vertices, j, n);
+					    k = base_number(Nmosimp, v, n);
+					    //printf("k = %d\n", k);
+                        if (k != -1) {
+                            matrix[k][i] = pow(-1, j);
+                        }
                     }
-                }
-				Nsimp = Nsimp->next;
-			}
+				    Nsimp = Nsimp->next;
+			    }
 			return matrix;
 		}
 
