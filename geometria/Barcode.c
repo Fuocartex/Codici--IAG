@@ -2,32 +2,54 @@
 
 int main()
 {
+    int** m = NULL;
+	int* k = 0;
+	double* l_max = NULL;
+	m = input_point(&k);
+	int n = k;
+    double** d = NULL;
 	
+    d = distance_matrix(m, n);
+	
+	/*printf("Matrice delle distanze:\n");
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			printf("%lf ", d[i][j]);
+		}
+		printf("\n");
+	}*/	
 	matrici_persistenza* mp = NULL;
-	mp = create_M_P();
+	mp = create_matrix_persistenza(d, n, &l_max);
+
+	
+	//matrici_persistenza* mp = NULL;
+	//mp = create_M_P();
 	M_P* mod_p = create_Modulo_Persistenza(mp);
-	print1(mod_p);
+	//print1(mod_p);
 
-	int h = beta_i_j(mod_p, 11.5, 11.5, 0, 1);
+	//int h = beta_i_j(mod_p, 11.5, 11.5, 0, 1);
 
-	printf("beta_i_j = %d\n", h);
-
-	int** matrix = NULL;
-	matrix = beta_matrix(0, 11, 0.5, mod_p, 0, 1);
-
-	//print_matrix(matrix, 24, 24);
-
-	int** mu = NULL;
-	mu = mu_matrix(matrix, 24);
-	//printf("mu\n");
-	print_matrix(mu, 24, 24);
 	//printf("beta_i_j = %d\n", h);
 
-	char* json_matrix = matrix_to_json(mu, 24);
+	int** matrix = NULL;
+	printf("l_max = %lf\n", l_max);
+	matrix = beta_matrix(0, 2, 0.5, mod_p, 0, 2);
+	int dim = 2 / 0.5 + 1;
+	print_matrix(matrix, dim, dim);
+
+	int** mu = NULL;
+	mu = mu_matrix(matrix, dim);
+	//printf("mu\n");
+	print_matrix(mu, dim, dim);
+	//printf("beta_i_j = %d\n", h);
+
+	char* json_matrix = matrix_to_json(mu, dim);
     
 	//printf("Matrice in formato JSON: %s\n", json_matrix);
 
-    int n = 24;  // Supponiamo che la matrice sia 100x100
+    n = dim;  // Supponiamo che la matrice sia 100x100
     int matrix_size = n * n * 4; // Stima della memoria necessaria (interi in JSON)
     int command_size = matrix_size + 100; // Qualche byte extra per il comando
 
@@ -49,11 +71,11 @@ int main()
     }
 
     // Pulizia: liberiamo la memoria allocata
-    free(json_matrix);
+    /*free(json_matrix);
     for (int i = 0; i < 24; i++) {
         free(matrix[i]);
     }
-    free(matrix);
-
+    free(matrix);*/
+	
 	return 0;
 }

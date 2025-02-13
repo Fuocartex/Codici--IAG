@@ -6,6 +6,7 @@
 
 	//int** omologia(int**, int, int, int**, int, int);
 	int compare(const void*, const void*);
+	int compare_double(const void*, const void*);
 	int dim_omologia(int**, int, int, int**, int, int);
 	bool is_Complex(int**, int, int, int**, int, int);
 	
@@ -13,6 +14,15 @@
 
 	int compare(const void* a, const void* b) {
 		return (*(int*)a - *(int*)b);
+	}
+
+	int compare_double(const void* a, const void* b) {
+		double da = *(const double*)a;
+		double db = *(const double*)b;
+
+		if (da < db) return -1;
+		if (da > db) return 1;
+		return 0;
 	}
 
 	bool is_Complex(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {

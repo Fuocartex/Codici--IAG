@@ -38,6 +38,11 @@
 	int beta_i_j(M_P*, double, double, int, int);
 	int** beta_matrix(int, int, double, M_P*, int, int);
 	int** mu_matrix(int**, int);
+	double** distance_matrix(int**, int);
+	int** input_point(int*);
+	int** zero_one_matrix(double**, int, double);
+	double* find_lambda_value(double**, int);
+	matrici_persistenza* create_matrix_persistenza(double**, int, double*);
 
 	matrici_persistenza* create_M_P(void) {
 		matrici_persistenza* mp1 = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
@@ -95,7 +100,7 @@
 		mod_p->l_min = mp->l_min;
 		mod_p->l_max = mp->l_max;
 		mod_p->size = size;
-		mod_p->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, size - 1);
+		mod_p->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
 		mod_p->prev = NULL;
 		app = mod_p;
 
@@ -105,7 +110,7 @@
 			new = (M_P*)malloc(sizeof(M_P));
 			new->l_min = mp->l_min;
 			new->l_max = mp->l_max;
-			new->sc = complex_from_adjacency_matrix_truncated(mp->matrix_d, size, size - 1);
+			new->sc = complex_from_adjacency_matrix_complete(mp->matrix_d, size);
 			
 			new->prev = mod_p;
 			new->next = NULL;
@@ -160,7 +165,9 @@
 		if (!sc2)
 			return 0;
 
-		if (!sc1[h].size || sc1[h].size == 0)
+		printf("i = %lf, j = %lf\n", i, j);
+
+		if (sc1[h].size == 0)
 			return 0;
 
 		//printf("sc1[h].size = %d\n", sc1[h].size);
@@ -235,7 +242,7 @@
 	void print1(M_P* a) {
 		M_P* mp = a;
 		while (mp) {
-			printComplex(mp->sc, 2);
+			printComplex(mp->sc, 3);
 			mp = mp->next;
 		}
 	}
@@ -263,6 +270,162 @@
 			for (j = i + 1; j < n; j++)
 				matrix[i][j] = beta[i][j - 1] - beta[i][j] + beta[i - 1][j] - beta[i - 1][j - 1];
 		return matrix;
+	}
+
+	double** distance_matrix(int** point, int n) {
+		int i = 0, j = 0;
+		double** matrix = NULL;
+		matrix = calloc(n, sizeof(double*));
+		for (i = 0; i < n; i++) {
+			matrix[i] = calloc(n, sizeof(double));
+		}
+		for (i = 0; i < n; i++) {
+			for (j = i; j < n; j++) {
+				matrix[i][j] = sqrt(pow(point[i][0] - point[j][0], 2) + pow(point[i][1] - point[j][1], 2));
+				matrix[j][i] = matrix[i][j];
+			}
+		}
+		return matrix;
+	}
+
+	int** input_point(int *k) {
+		int** matrix = NULL;
+		int n = 0;
+		printf("Inserisci il numero di punti: n = ");
+		scanf("%d", &n);
+		*k = n;
+		matrix = input_null(matrix, n, 2);
+		int i = 0;
+		for (i = 0; i < n; i++) {
+			printf("Inserisci le coordinate del punto %d: ", i + 1);
+			scanf("%d %d", &matrix[i][0], &matrix[i][1]);
+		}
+					
+	return matrix;
+	}
+
+	int** zero_one_matrix(double** matrix, int n, double lambda) {
+		int** m = NULL;
+		m = input_null(m, n, n);
+		int i = 0, j = 0;
+		for (i = 0; i < n; i++) {
+			for (j = i; j < n; j++) {
+				if (matrix[i][j] < lambda) {
+					m[i][j] = 1;
+					m[j][i] = 1;
+				}
+				else
+				{
+					m[i][j] = 0;
+					m[j][i] = 0;
+				}
+			}
+		}
+
+		return m;
+	}
+
+	double* find_lambda_value(double** matrix, int n) {
+		int size = n * (n - 1) / 2;
+		double* lambda = (double*)calloc(size, sizeof(double));
+		int i = 0, j = 0, k = 0;
+		
+		for (i = 0; i < n; i++)
+			for (j = i + 1; j < n; j++) {
+				lambda[k] = matrix[i][j];
+				k++;
+			}
+
+		double l = 0;
+		double app = 0;
+		int iter = 0;
+			
+		qsort(lambda, size, sizeof(double), compare_double);
+		
+
+		while (l < lambda[size - 1] || iter < size - 1) {
+			l += 0.5;
+				
+			if (lambda[iter] == app) {
+				lambda[iter] = 0;
+				iter++;
+				l -= 0.5;
+				continue;
+			}
+			else if(l > lambda[iter])
+			{
+				app = lambda[iter];
+				lambda[iter] = l;
+				iter++;
+			}				
+		}
+
+		return lambda;
+	}
+
+	matrici_persistenza* create_matrix_persistenza(double** matrix, int n, double* l) {
+		matrici_persistenza* mp = NULL, * app = NULL, * new = NULL;
+		int size = (n*(n-1)/2);
+		double* lambda = find_lambda_value(matrix, n);
+		printf("Lambda\n");
+		for (int i = 0; i < size; i++)
+			printf("%lf ", lambda[i]);
+
+		int i = 0;
+		while (lambda[i] == 0)
+			i++;
+		mp = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
+		mp->l_min = 0.5;
+		mp->l_max = lambda[i]-0.5;
+		mp->size = n;
+		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_max);
+		printf("l_min = %lf\n", mp->l_min);
+		printf("mp->l_max = %lf\n", mp->l_max);
+
+		mp->prev = NULL;
+		mp->next = NULL;
+		app = mp;
+		i++;
+		printf("i = %d\n", i);
+		while (i < size)
+		{
+			new = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
+			new->l_min = mp->l_max + 0.5;
+			while (lambda[i] == 0)
+			{
+				if(i < size)
+					i++;
+				else
+					break;
+			}
+			
+			new->l_max = lambda[i] - 0.5;
+			new->size = n;
+			new->matrix_d = zero_one_matrix(matrix, n, new->l_max);
+			
+			new->prev = mp;
+			new->next = NULL;
+			mp->next = new;
+			mp = new;
+			i++;
+			printf("l_min = %lf\n", mp->l_min);
+			printf("mp->l_max = %lf\n", mp->l_max);
+		}
+
+		new = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
+		new->l_min = mp->l_max + 0.5;
+		new->l_max = new->l_min;
+		new->size = n;
+		new->matrix_d = zero_one_matrix(matrix, n, new->l_max);
+		
+		new->prev = mp;
+		new->next = NULL;
+		mp->next = new;
+		mp = new;
+		*l = mp->l_max;
+		printf("l_min = %lf\n", mp->l_min);
+		printf("l_max = %lf\n", *l);
+		return app;
 	}
 
 #endif
