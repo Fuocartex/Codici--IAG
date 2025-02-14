@@ -10,6 +10,7 @@ mpz_t* cont_frac_sqrt_mod(mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, unsigned lon
 void cont_frac_next_term(mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
 mpz_t* squares_mod(mpz_t*, unsigned long int, mpz_t);
 void riduci_mod_min(mpz_t, mpz_t);
+unsigned long int check_null_column(bool*, int**, unsigned long int, unsigned long int);
 
 // Fattorizza l'intero positivo n utilizzando l'algoritmo delle basi di primi di Pomerance: se riesce restituisce 1 e salva in
 // d un divisore proprio di n, altrimenti restituisce 0. Bound rappresenta il massimo valore che possono assumere i primi nella base,
@@ -28,8 +29,8 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
     }
 
     // la matrice M ((l+1)*l, con l=base_length) conterra', nell'entrata M[i][j], l'esponente massimo exp tale che base[j]^exp divide b[i]
-    int** M=malloc((base_length+1)*sizeof(int));
-    for (i=0; i<base_length+1; i++) M[i]=malloc(base_length*sizeof(int));
+    int** M=(int**)malloc((base_length+1)*sizeof(int));
+    for (i=0; i<base_length+1; i++) M[i]=(int*)malloc(base_length*sizeof(int));
     for (i=0; i<base_length+1; i++) for (j=0; j<base_length; j++) M[i][j]=0; // inizializzo a 0
 
     // dati iniziali delle relazioni ricorsive per lo sviluppo in frazione continua di radice di n
@@ -80,15 +81,50 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
             }
         }
 
+        // conto le colonne nulle poiche' possono essere ignorate nell'eliminazione di Gauss, facendo risparmiare spazio e tempo
+        unsigned long int num_null_cols;
+        bool* is_col_zeros=(bool*)malloc(base_length*sizeof(bool));
+        num_null_cols = check_null_column(is_col_zeros,M,base_length+1,base_length);
+        unsigned long int num_cols_M_mod2 = base_length-num_null_cols;
+        // creo un vettore di "differenze cumulative", lungo come il numero di colonne di M_mod2, che tiene conto di quante colonne sono state
+        // rimosse fino a quel punto: l'idea e' che, se sto guardando la colonna j di M_mod2, questa corrisponde alla colonna (j+cumul_diff[j]) di M,
+        // e cioe' all'elemento della base di indice (j+cumul_diff[j]).
+        int* cumul_diff=(int*)malloc(num_cols_M_mod2*sizeof(int));
+        int contatore=0;
+        i=0; j=0;
+        while (j<num_cols_M_mod2) {
+            while (is_col_zeros[i]) {
+                contatore++;
+                i++;
+                if (i>base_length) break;
+            }
+            cumul_diff[j]=contatore;
+            i++; j++;
+        }
+        // creo la matrice booleana M_mod2 che contiene i coefficienti di M ridotti modulo 2, escluse le colonne nulle (true=1, false=0).
+        // sara' una matrice di dimensioni (base_length+1)*(base_length-num_null_cols).
+        bool** M_mod2=(bool**)malloc((base_length+1)*sizeof(bool));
+        for (i=0; i<base_length+1; i++) M_mod2[i]=(bool*)malloc(num_cols_M_mod2*sizeof(bool));
+        for (i=0; i<base_length+1; i++) {
+            for (j=0; j<num_cols_M_mod2; j++) {
+                M_mod2[i][j]=M[i][j+cumul_diff[j]] % 2;
+            }
+        }
+        
+        
 
 
-        ////// da proseguire qui ///////    (controllare colonne nulle, creare matrice booleana riducendo M modulo 2, Gauss, cercare congruenze ...)
+
+        ////// da proseguire qui ///////    (affiancare identita' (base_length+1), fare Gauss, cercare congruenze ...)
 
 
 
 
-        for (i=0; i<base_length+1; i++) mpz_clear(b[i]);
-        for (i=0; i<base_length+1; i++) mpz_clear(squares[i]);
+
+        free(is_col_zeros); free(cumul_diff);
+        for (i=0; i<base_length+1; i++) free(M_mod2[i]); free(M_mod2);
+        for (i=0; i<base_length+1; i++) mpz_clear(b[i]); free(b);
+        for (i=0; i<base_length+1; i++) mpz_clear(squares[i]); free(squares);
         it++;
     }
 
@@ -217,4 +253,22 @@ void riduci_mod_min(mpz_t a, mpz_t n){
 
     mpz_clear(n_mezzi);
     return;
+}
+
+// per una matrice m*n, salva in is_zero[j] true se la colonna j di M e' tutta nulla, false altrimenti; restituisce il numero di colonne nulle.
+unsigned long int check_null_column(bool* is_zero, int** M, unsigned long int m, unsigned long int n) {
+    int i,j;
+    unsigned long int num_null_columns=0;
+    for (j=0; j<n; j++) {
+        is_zero[j]=true;
+        num_null_columns++;
+        for (i=0; i<m; i++) {
+            if (M[i][j]!=0) {
+                is_zero[j]=false;
+                num_null_columns--;
+                break;
+            }
+        }
+    }
+    return num_null_columns;
 }
