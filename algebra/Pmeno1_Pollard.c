@@ -25,7 +25,7 @@ int main () {
 	}
    	
   	// Pulizia della memoria
-	mpz_clears(n, d, NULL);
+	mpz_clears(n, d, r, NULL);
 		
 	return 0; 
 }
