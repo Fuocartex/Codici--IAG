@@ -18,6 +18,18 @@ unsigned long int check_null_column(bool*, int**, unsigned long int, unsigned lo
 int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
     int i,j;
 
+    // controllo che n non sia un quadrato (serve per produrre i numeratori dello sviluppo in frazione continua di sqrt(n))
+    mpz_t sqrt_n,temp;
+    mpz_inits(sqrt_n,temp,NULL);
+    mpz_sqrt(sqrt_n,n); // parte intera della radice di n
+    mpz_mul(temp,sqrt_n,sqrt_n);
+    if (mpz_cmp(temp,n)==0) {
+        mpz_set(d,sqrt_n);
+        mpz_clears(sqrt_n,temp,NULL);
+        return 1;
+    }
+    mpz_clears(sqrt_n,temp,NULL);
+
     // Costruisco una base formata da -1, 2 e tutti i numeri dispari da 3 fino a bound (non saranno tutti primi; e' una scelta semplice ma non ottimale)
     unsigned long int base_length = mpz_get_ui(bound);
     base_length=(base_length-1)/2 +2;
