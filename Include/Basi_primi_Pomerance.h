@@ -11,12 +11,27 @@ void cont_frac_next_term(mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
 mpz_t* squares_mod(mpz_t*, unsigned long int, mpz_t);
 void riduci_mod_min(mpz_t, mpz_t);
 unsigned long int check_null_column(bool*, int**, unsigned long int, unsigned long int);
+void Gauss (bool**, bool**, unsigned long int, unsigned long int);
+unsigned long int find_null_rows (bool**, unsigned long int, unsigned long int, unsigned long int);
+void get_B (mpz_t, mpz_t, bool**, mpz_t*, int*, unsigned long int, unsigned long int);
+void get_A (mpz_t, mpz_t, mpz_t*, int**, unsigned long int, bool**, int*, unsigned long int);
 
 // Fattorizza l'intero positivo n utilizzando l'algoritmo delle basi di primi di Pomerance: se riesce restituisce 1 e salva in
 // d un divisore proprio di n, altrimenti restituisce 0. Bound rappresenta il massimo valore che possono assumere i primi nella base,
 // iter il numero di iterazioni eseguite dall'algoritmo.
 int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
-    int i,j;
+	int i,j;
+
+    // controllo che n sia dispari
+    mpz_t r;
+    mpz_init(r);
+    mpz_fdiv_r_ui(r,n,2);
+    if (mpz_cmp_si(r,0)==0) {
+        mpz_set_ui(d,2);
+        mpz_clear(r);
+        return 1;
+    }
+    mpz_clear(r);
 
     // controllo che n non sia un quadrato (serve per produrre i numeratori dello sviluppo in frazione continua di sqrt(n))
     mpz_t sqrt_n,temp;
@@ -30,7 +45,7 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
     }
     mpz_clears(sqrt_n,temp,NULL);
 
-    // Costruisco una base formata da -1, 2 e tutti i numeri dispari da 3 fino a bound (non saranno tutti primi; e' una scelta semplice ma non ottimale)
+	// Costruisco una base formata da -1, 2 e tutti i numeri dispari da 3 fino a bound (non saranno tutti primi; e' una scelta semplice ma non ottimale)
     unsigned long int base_length = mpz_get_ui(bound);
     base_length=(base_length-1)/2 +2;
     mpz_t *base = (mpz_t*)malloc(base_length*sizeof(mpz_t));
@@ -41,7 +56,7 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
     }
 
     // la matrice M ((l+1)*l, con l=base_length) conterra', nell'entrata M[i][j], l'esponente massimo exp tale che base[j]^exp divide b[i]
-    int** M=(int**)malloc((base_length+1)*sizeof(int));
+    int** M=(int**)malloc((base_length+1)*sizeof(int*));
     for (i=0; i<base_length+1; i++) M[i]=(int*)malloc(base_length*sizeof(int));
     for (i=0; i<base_length+1; i++) for (j=0; j<base_length; j++) M[i][j]=0; // inizializzo a 0
 
@@ -115,7 +130,7 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
         }
         // creo la matrice booleana M_mod2 che contiene i coefficienti di M ridotti modulo 2, escluse le colonne nulle (true=1, false=0).
         // sara' una matrice di dimensioni (base_length+1)*(base_length-num_null_cols).
-        bool** M_mod2=(bool**)malloc((base_length+1)*sizeof(bool));
+        bool** M_mod2=(bool**)malloc((base_length+1)*sizeof(bool*));
         for (i=0; i<base_length+1; i++) M_mod2[i]=(bool*)malloc(num_cols_M_mod2*sizeof(bool));
         for (i=0; i<base_length+1; i++) {
             for (j=0; j<num_cols_M_mod2; j++) {
@@ -123,18 +138,59 @@ int basi_primi (mpz_t d, mpz_t n, mpz_t bound, unsigned long int iter){
             }
         }
         
+        // costruisco la matrice identità da affiancare a M_mod2 prima di applicare Gauss
+        bool** Id=(bool**)malloc((base_length+1)*sizeof(bool*));
+        for (i=0; i<base_length+1; i++) Id[i]=(bool*)malloc((base_length+1)*sizeof(bool));
+        for (i=0; i<base_length+1; i++) for (j=0; j<base_length+1; j++) Id[i][j]=false; // inizializzo a 0
+        for (i=0; i<base_length+1; i++) Id[i][i]=true; // pongo la diagonale uguale ad 1
         
+        // applico Gauss e calcolo A e B
+        Gauss(M_mod2, Id, base_length+1, num_cols_M_mod2);
+        unsigned long int index=0; 
+        unsigned long int null_row=0;
+        mpz_t A, B, menoB, ApiuB;
+	    mpz_inits(A, B, menoB, ApiuB, NULL);
+        while (index<(base_length+1)) {
+		    null_row=find_null_rows(M_mod2, base_length+1, num_cols_M_mod2, index);
+		    get_B(B, n, Id, b, cumul_diff, null_row, (base_length+1));
+			get_A(A, n, base, M, base_length, Id, cumul_diff, null_row);
+            mpz_sub(menoB,n,B);
+            mpz_fdiv_r(menoB,menoB,n);
+		    
+		    if (mpz_cmp(A, B)==0 || mpz_cmp(A, menoB)==0) { // se A=B oppure A=-B mod n, l'algoritmo è fallito
+		    	if (index!=base_length) { // se non abbiamo esaurito le righe riproviamo con un'altra combinazione
+		    		index++;
+		    	} else { // altrimenti ricominciamo da capo
+		    		break; // in questo modo rientriamo nel ciclo while(it<iter)
+		    	}
+		    } else { // se invece se A!=B oppure A!=-B mod n concludo l'algoritmo calcolando d=MCD(A+B, n)
+				mpz_add(ApiuB, A, B);
+				mcd_euclide(d, ApiuB, n);
 
+/*                if (mpz_cmp_si(d,1)==0) {//// sarebbe da rimuovere; e' solo per evitare che l'algoritmo (sbagliato) restituisca 1
+                    index++;
+                    continue;
+                }
+*/
 
-
-        ////// da proseguire qui ///////    (affiancare identita' (base_length+1), fare Gauss, cercare congruenze ...)
-
-
-
-
-
+                // pulizia memoria
+				mpz_clears(A, B, menoB, ApiuB, NULL);
+                free(is_col_zeros); free(cumul_diff);
+                for (i=0; i<base_length+1; i++) free(M_mod2[i]); free(M_mod2);
+                for (i=0; i<base_length+1; i++) free(Id[i]); free(Id);
+                for (i=0; i<base_length+1; i++) mpz_clear(b[i]); free(b);
+                for (i=0; i<base_length+1; i++) mpz_clear(squares[i]); free(squares);
+                for (i=0; i<base_length+1; i++) free(M[i]); free(M);
+                for (i=0; i<base_length; i++) mpz_clear(base[i]); free(base);
+                mpz_clears(a,beta,gamma,bmeno1,bmeno2,NULL);
+				return 1;
+	    	}
+		}
+        // pulizia memoria
+		mpz_clears(A, B, menoB, ApiuB, NULL);
         free(is_col_zeros); free(cumul_diff);
         for (i=0; i<base_length+1; i++) free(M_mod2[i]); free(M_mod2);
+        for (i=0; i<base_length+1; i++) free(Id[i]); free(Id);
         for (i=0; i<base_length+1; i++) mpz_clear(b[i]); free(b);
         for (i=0; i<base_length+1; i++) mpz_clear(squares[i]); free(squares);
         it++;
@@ -283,4 +339,115 @@ unsigned long int check_null_column(bool* is_zero, int** M, unsigned long int m,
         }
     }
     return num_null_columns;
+}
+
+//eliminazione di Gauss applicata alla matrice M_mod2 i cui passaggi vengono ripetuti anche su una matrice identità di dimensione pari al numero di righe di M_mod2
+void Gauss(bool **M, bool **Id, unsigned long int rows, unsigned long int cols) {
+    int row=0;
+    for (int col=0; col<cols && row<rows; col++) {
+        // Trova il pivot nella colonna corrente
+        int pivot=-1;
+        for (int i=row; i<rows; i++) {
+            if (M[i][col]) {
+                pivot=i;
+                break;
+            }
+        }
+        
+        // Se non troviamo un pivot, passiamo alla colonna successiva
+        if (pivot==-1) {
+        	continue;
+        }
+
+        // Scambia la riga pivot con la riga attuale
+        if (pivot!=row) {
+            bool *temp=M[pivot];
+            M[pivot]=M[row];
+            M[row]=temp;
+
+            temp=Id[pivot];
+            Id[pivot]=Id[row];
+            Id[row]=temp;
+        }
+
+        // Elimina i valori nelle altre righe (comando XOR)
+        for (int i=0; i<rows; i++) {
+            if (i!=row && M[i][col]) {
+                for (int j=0; j<cols; j++) {
+                    M[i][j] ^= M[row][j];
+//                    Id[i][j] ^= Id[row][j];
+                }
+                for (int j=0; j<rows; j++) { // forse devo fare cosi'? Il fatto e' che Id ha piu' colonne di M
+                    Id[i][j] ^= Id[row][j];
+                }
+            }
+        }
+        
+        // Passa alla prossima riga
+        row++;
+    }
+    return;
+}
+
+// troviamo la prima riga nulla di M_mod2 dopo aver applicato Gauss, l'indice indica da quela riga cominciare a fare la ricerca 
+unsigned long int find_null_rows (bool** mat, unsigned long int rows, unsigned long int cols, unsigned long int index) {
+	unsigned long int null_row=rows; // inizializzo ad un intero che non può assumere
+	for (int i=index; i<rows; i++) {
+		for (int j=0; j<cols; j++) {
+			if (mat[i][j]==true) { // appena incontro un 1 interrompo il ciclo sulle colonne
+				break;
+			} else if (j==cols-1 && mat[i][j]==false) { // se ho controllato tutte le colonne modifico null_row
+				null_row=i; 
+			}
+		}
+		if (null_row!=rows) { // se ho modificato null_row ho trovato una riga nulla, posso interrompere la ricerca
+			break;
+		}
+	}
+	return null_row;
+}
+
+// B equivale al prodotto dei vari b[i] con i indice trovato con gauss, ossia i=j+cumul_diff[j] se Id[null_row][j]==true
+void get_B (mpz_t B, mpz_t n, bool** Id, mpz_t* b, int* cumul_diff, unsigned long int null_row, unsigned long int cols) {
+	mpz_set_si(B, 1);
+	for (int j=0; j<cols; j++){
+		if (Id[null_row][j]==true) {
+//			mpz_mul(B, B, b[j+cumul_diff[j]]);
+            mpz_mul(B, B, b[j]); // i vari 1 nella matrice identita' si trovano sulla colonna j se devo considerare la riga j della matrice M,
+                                 // ossia il j-esimo elemento dei b; giusto? Anche perche' get_B viene chiamata con cols=base_length+1, e b e'
+                                 // lungo base_length+1, cosi' come la dimensione di Id
+
+			mpz_fdiv_r(B,B,n);
+		}
+	}
+	return;
+}
+
+void get_A (mpz_t A, mpz_t n, mpz_t* base, int** M, unsigned long int base_length, bool** Id, int* cumul_diff, unsigned long int null_row) {
+	mpz_set_si(A, 1);
+	// calcolo exp_tot, ossia sommo le righe i di M (i sono quelli ricavati da gauss)
+	int* exp_tot=(int*)malloc(base_length*sizeof(int));
+	for (int i=0; i<base_length; i++) exp_tot[i]=0; // inizializzo a zero
+	for (int i=0; i<(base_length+1); i++) { // scorriamo la riga null_row di Id, se nella colonna i l'elemento è 1 (ossia true)
+		if (Id[null_row][i]==true) { // allora consideriamo la riga i+cumul_diff[i] di M
+			for (int j=0; j<base_length; j++) {
+//				exp_tot[j]=exp_tot[j]+M[i+cumul_diff[i]][j];
+                exp_tot[j]=exp_tot[j]+M[i][j]; // ragionamento analogo a quello per get_B: la matrice M ha dimensione (base_length+1 ) * base_length
+			}
+		}
+	}
+	
+	// ora calcoliamo A=base[i]^(exp_tot[i]/2)
+	mpz_t temp; 
+	mpz_inits(temp, NULL);
+	for (int i=0; i<base_length; i++) { 
+		mpz_powm_ui(temp, base[i], exp_tot[i]/2, n); 
+		mpz_mul(A, A, temp);
+		mpz_fdiv_r(A,A,n);
+	}
+	
+	mpz_clears(temp, NULL);
+	free(exp_tot);
+	
+	return; 
 }
