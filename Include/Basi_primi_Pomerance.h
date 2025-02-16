@@ -216,6 +216,8 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
 
     // esplicito i primi due termini (poiché utilizzano dati iniziali specifici su b_-1 e b_-2)
 
+    mpz_mul(temp,a,bmeno1);
+    mpz_add(b[0],temp,bmeno2); // aggiornato b[0]
     mpz_mul(temp,beta,beta);
     mpz_sub(temp,n,temp);
     mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
@@ -224,9 +226,7 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
     mpz_mul(temp,a,gamma);
     mpz_add(temp,temp,beta);
     mpz_neg(beta,temp); // aggiornato beta
-    mpz_mul(temp,a,bmeno1);
-    mpz_add(b[0],temp,bmeno2);
-    riduci_mod_min(b[0],n); // aggiornato b[0]
+    riduci_mod_min(b[0],n);
 
     if (k==1) {
         mpz_set(bmeno2,bmeno1);
@@ -234,6 +234,8 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
         return b;
     }
 
+    mpz_mul(temp,a,b[0]);
+    mpz_add(b[1],temp,bmeno1); // aggiornato b[1]
     mpz_mul(temp,beta,beta);
     mpz_sub(temp,n,temp);
     mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
@@ -242,10 +244,8 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
     mpz_mul(temp,a,gamma);
     mpz_add(temp,temp,beta);
     mpz_neg(beta,temp); // aggiornato beta
-    mpz_mul(temp,a,b[0]);
-    mpz_add(b[1],temp,bmeno1);
-    riduci_mod_min(b[1],n); // aggiornato b[1]
-    
+    riduci_mod_min(b[1],n);
+
     if (k==2) {
         mpz_set(bmeno2,b[0]);
         mpz_set(bmeno1,b[1]);
@@ -253,6 +253,8 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
     }
 
     for (i=2; i<k; i++) {
+        mpz_mul(temp,a,b[i-1]);
+        mpz_add(b[i],temp,b[i-2]); // aggiornato b[i]
         mpz_mul(temp,beta,beta);
         mpz_sub(temp,n,temp);
         mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
@@ -261,10 +263,9 @@ mpz_t* cont_frac_sqrt_mod(mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, mpz_t be
         mpz_mul(temp,a,gamma);
         mpz_add(temp,temp,beta);
         mpz_neg(beta,temp); // aggiornato beta
-        mpz_mul(temp,a,b[i-1]);
-        mpz_add(b[i],temp,b[i-2]);
-        riduci_mod_min(b[i],n); // aggiornato b[i]
+        riduci_mod_min(b[i],n);
     }
+
     mpz_set(bmeno2,b[k-2]);
     mpz_set(bmeno1,b[k-1]);
     
@@ -279,6 +280,8 @@ void cont_frac_next_term(mpz_t b, mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, 
     mpz_inits(sqrt_n,temp,NULL);
     mpz_sqrt(sqrt_n,n);
 
+    mpz_mul(temp,a,bmeno1);
+    mpz_add(b,temp,bmeno2); // aggiornato b
     mpz_mul(temp,beta,beta);
     mpz_sub(temp,n,temp);
     mpz_fdiv_q(gamma,temp,gamma); // aggiornato gamma
@@ -287,9 +290,8 @@ void cont_frac_next_term(mpz_t b, mpz_t n, mpz_t bmeno1, mpz_t bmeno2, mpz_t a, 
     mpz_mul(temp,a,gamma);
     mpz_add(temp,temp,beta);
     mpz_neg(beta,temp); // aggiornato beta
-    mpz_mul(temp,a,bmeno1);
-    mpz_add(b,temp,bmeno2);
-    riduci_mod_min(b,n); // aggiornato b
+    riduci_mod_min(b,n);
+
     mpz_set(bmeno2,bmeno1);
     mpz_set(bmeno1,b); // aggiornati i termini precedenti
 

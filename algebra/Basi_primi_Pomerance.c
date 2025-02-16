@@ -14,9 +14,9 @@ int main () {
         unsigned int r=strlen(mpz_get_str(NULL,2,n));
         unsigned int s=sqrt(r*log(r)/2);
         mpz_set_ui(bound,1);
-        mpz_mul_2exp(bound,bound,s+1);
+        mpz_mul_2exp(bound,bound,s);
         mpz_add_ui(bound,bound,2); // calcolo bound seguendo (circa) la stima del Koblitz
-        
+
         int outcome=basi_primi(d,n,bound,1);
         if (outcome==1) gmp_printf("Divisore: %Zd",d);
         else printf("Non sono riuscito a fattorizzare");
