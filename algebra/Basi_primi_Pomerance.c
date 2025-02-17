@@ -2,14 +2,14 @@
 #include <string.h>
 #include <math.h>
 #include "..\Include\Basi_primi_Pomerance.h"
-#include "..\Include\Fattorizzazione.h"
+#include "..\Include\MillerRabin.h"
 
 int main () {
     mpz_t n,bound,d;
     mpz_inits(n,bound,d,NULL);
     printf("Inserisci il numero da fattorizzare:\n");
     gmp_scanf("%Zd",n);
-    if (mpz_probab_prime_p(n,20)) printf("Numero primo");
+    if (millerRabin(n,20)) printf("Numero primo");
     else {
         unsigned int r=strlen(mpz_get_str(NULL,2,n));
         unsigned int s=sqrt(r*log(r)/2);

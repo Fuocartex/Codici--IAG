@@ -24,7 +24,7 @@ int radice_mod (mpz_t x, mpz_t a, mpz_t p) {
     }
 
     // controllo che a sia un quadrato mod p: se il simbolo di jacobi è diverso da 1, a non è un quadrato
-    int j = mpz_jacobi(a_modp,p); // DA SOSTITUIRE CON IL SIMBOLO DI JACOBI SCRITTO DA NOI
+    int j = mpz_jacobi(a_modp,p);
     if (j!=1) {
         mpz_clear(a_modp);
         return 0;
@@ -49,7 +49,7 @@ int radice_mod (mpz_t x, mpz_t a, mpz_t p) {
     // cerco un non-quadrato
     do {
         mpz_urandomm(beta,randstate,p); // genero un numero casuale tra 0 e p-1
-    } while (mpz_jacobi(beta,p)!=-1); // DA SOSTITUIRE CON IL SIMBOLO DI JACOBI SCRITTO DA NOI
+    } while (mpz_jacobi(beta,p)!=-1);
 
     exp_mod(beta,beta,d,p); // inizializzo beta=(non-quadrato)^d
     // inizializzo x=a^((d+1)/2), ossia x^2*a^-1=a^d radice 2^(h-1)-esima di 1

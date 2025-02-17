@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "..\Include\Lenstra.h"
 #include "..\Include\Fattorizzazione.h"
+#include "..\Include\MillerRabin.h"
 
 Factor* fattorizza_Lenstra(mpz_t,Factor*);
 
@@ -12,8 +13,8 @@ int main () {
     gmp_scanf("%Zd",n);
 
     Factor* fattori=NULL;
-    // DA SOSTITUIRE CON IL TEST DI MILLER-RABIN SCRITTO DA NOI
-    if (mpz_probab_prime_p(n,iter)!=0) fattori=cons(fattori,n,1);
+
+    if (millerRabin(n,iter)!=0) fattori=cons(fattori,n,1);
     else fattori=fattorizza_Lenstra(n,fattori);
     print_factors(fattori);
 
@@ -36,13 +37,13 @@ Factor* fattorizza_Lenstra(mpz_t n, Factor* fattori) {
     mpz_fdiv_q(d2,n,d1);
 
     // se i divisori che ho trovato non sono primi, richiamo l'algoritmo di fattorizzazione; altrimenti aggiungo il fattore trovato alla lista
-    if (mpz_probab_prime_p(d1,iter)==0) { // DA SOSTITUIRE CON IL TEST DI MILLER-RABIN SCRITTO DA NOI
+    if (millerRabin(d1,iter)==0) {
         fattori=fattorizza_Lenstra(d1,fattori);
     }
     else {
         fattori=add_factor(fattori,d1,1);
     }
-    if (mpz_probab_prime_p(d2,iter)==0) { // DA SOSTITUIRE CON IL TEST DI MILLER-RABIN SCRITTO DA NOI
+    if (millerRabin(d2,iter)==0) {
         fattori=fattorizza_Lenstra(d2,fattori);
     }
     else {
