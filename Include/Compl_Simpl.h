@@ -197,6 +197,7 @@
             return head;
         }
 
+        //stessa funzione di sopra ma leggo da file
         Simplex* createSimplex_file(int size, int n, FILE* f) {
             Simplex* simplex, * head, * app;
             simplex = (Simplex*)malloc(sizeof(Simplex));
@@ -230,14 +231,14 @@
 		int** edge_Matrix(SimplicialComplex* sc, int n) {
             int i = 0, j = 0, k = -1, row = sc[n - 1].size, col = sc[n].size;
             int** matrix;
-            matrix = calloc(row,sizeof(int*));
+            matrix = (int**)calloc(row,sizeof(int*));
 			Simplex* Nsimp, * Nmosimp;
 			int* v = (int*)malloc(n * sizeof(int));
 			Nsimp = sc[n].simplices;
 			Nmosimp = sc[n - 1].simplices;
 			//itero i vari n-simplessi
             for (int i = 0; i < row; i++)
-                matrix[i] = calloc(col, sizeof(int));
+                matrix[i] = (int*)calloc(col, sizeof(int));
                 for (int i = 0; i < sc[n].size; i++) {
 				    //itero i vari n-1-simplessi
 				    //creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
@@ -274,7 +275,8 @@
             }
         }
 
-		// Funzione per calcolare il rango di una matrice
+		/*
+        // Funzione per calcolare il rango di una matrice
 		int matrix_rank(int** matrix, int rows, int cols) {
             int rank = cols;  // Inizialmente assumiamo il rango massimo possibile
 
@@ -316,7 +318,7 @@
             }
 
             return rank;
-		}
+		}*/
 #pragma endregion
 
 #endif

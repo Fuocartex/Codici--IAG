@@ -57,7 +57,7 @@ bool eulero (mpz_t n, mpz_t it_max) {
 			gmp_randclear(state);
 			
 			return false;
-		} else { // verifico se a^((n-1)/2) é congruo o meno a ±1 mod n, in caso affermativo n potrebbe essere primo quindi continuo la verifica con un'altra base a, altrimenti n non è primo
+		} else { // verifico se a^((n-1)/2) é congruo o meno a più o meno 1 mod n, in caso affermativo n potrebbe essere primo quindi continuo la verifica con un'altra base a, altrimenti n non è primo
 			mpz_sub_ui(exp, n, 1); 
 			mpz_fdiv_q_ui(exp, exp, 2); // exp = (n-1)/2
 			exp_mod(c, a, exp, n); // calcoliamo a^((n-1)/2) mod n
