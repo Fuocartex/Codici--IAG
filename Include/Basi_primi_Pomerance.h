@@ -3,6 +3,9 @@
 #include <gmp.h>
 #include "mcd.h"
 
+// DISCLAIMER: questa versione a volte non funziona correttamente: per certi input sembra restituire come divisore 1 anziche' un divisore proprio;
+// sarebbero necessarie ulteriori indagini.
+
 int basi_primi (mpz_t, mpz_t, mpz_t, unsigned long int);
 
 // funzioni ausiliarie
