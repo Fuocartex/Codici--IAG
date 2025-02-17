@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[italian]{babel}
+
+\title{Algebra e geometria}
+\author{Andrea Agostini, Simone Bonanni, Giacomo Gneri,\\ Marta Graziano, Elena Sbordoni}
+\date{Febbraio 2025}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\section{Geometria: analisi dati}
+In questa parte del corso si mira a studiare la distribuzione di una grande quantità di dati per ricavarne importanti informazioni (per esempio quale opzione tra tante è ritenuta la migliore, come evolve una malattia in seguito alla somministrazione di un medicinale etc.).\\ Di seguito sono riportati i principali concetti matematici astratti e codici che serviranno per la creazione finale del \textbf{barcode}, uno strumento in grado di rappresentare graficamente l'andamento temporale di alcune caratteristiche topologiche dei dati presi in considerazione.
+
+\subsection{Complessi simpliciali}
+Sia \textit{X} un generico insieme (per esempio una moltitudine di dati) ed \(S\subset P(X)\), dove \(P(X)\) rappresenta l'insieme delle parti di \textit{X}.\\ \\ \textbf{Definizioni}\ : La coppia \((X,S)\) si dice \textbf{complesso simpliciale} se valgono le seguenti proprietà:
+\begin{enumerate}
+\item \(\tau \in S\ \Rightarrow\  \sigma\in S\ \  \forall\sigma\subset\tau\)  
+\item \(\tau\in P(X)\ ,\ |\tau|=1\ \Rightarrow \ \tau\in S\)
+\end{enumerate}
+Gli elementi di \textit{X} sono chiamati \textbf{vertici} e, più in generale, gli elementi di S sono chiamati \textbf{simplessi}. Un simplesso \(\tau\) si dice \textbf{massimale} se \[\tau\subset\sigma \ \Rightarrow\ \tau =\sigma\ .\]
+Dall'insieme di simplessi massimali è possibile ricostruire l'insieme complesso simpliciale e viceversa, come mostrano questi codici. (INSERIRE CODICI)
+\\ \\ Un altro modo per creare un complesso simpliciale, molto utile per gli scopi del corso, è tramite una matrice quadrata booleana, chiamata matrice di adiacenza, di dimensioni pari al numero di vertici in cui l'elemento \(x_{ij}\) indica se il vertice \textit{i} ed il vertice \textit{j} sono "vicini" o meno. Partendo infatti dai vertici e dalla matrice si può ricostruire l'intero complesso simpliciale tramite una strategia adottata in questo codice. (INSERIRE CODICE)
+\subsection{Complessi di catene e omologia simpliciale}
+Per studiare meglio i complessi simplicicali è utile introdurre una numerazione dei vertici al fine di poter "percorrere" l'insieme in analisi, dove per convenzione il vero positivo è da un vertice minore ad uno maggiore. Questo permette di definire la funzione \[\partial= \sum_{i=0}^n (-1)^i (x_0,...,x_{i-1},\hat{x_i},x_{i+1},...,x_n)\] dove con \(\hat{x_i}\) si intende che l'elemento \textit{i}-esimo del simplesso è ignorato. Viene dunque naturale introdurre il concetto di \textbf{combinazione lineari di k-simplessi} a coefficienti in un qualche anello commutativo \textit{A}:
+\[C_k((X,S),A):= \left\{\sum a_i\sigma_i\ |\ a_i\in A\ ,\ \sigma_i\in S_k\right\}\]
+\(C_k\) è un \textit{A}-modulo libero, nonchè un grubbo abeliano finitamente generato (\(S_k\) ne è una base), e \(\partial\) è una funzione \textit{A}-lineare da \(C_k\) a \(C_{k-1}\), quindi può essere studiata attraverso una matrice. (INSERIRE CODICE)\\ \\
+Un' altra proprietà fondamentale di \(\partial\) è che \[\partial^2=0\ ,\] da cui si ottiene che \(Im(\partial:C_{k+1}\rightarrow C_k)\subset Ker(\partial:C_{k}\rightarrow C_{k-1})\), quindi ha senso introdurre il concetto di \textbf{omologia del complesso simpliciale}:\\\[H_n(C):=\frac{Ker(\partial:C_{k}\rightarrow C_{k-1})}{Im(\partial:C_{k+1}\rightarrow C_k)}\]\\
+In particolare nel corso è stato dimostrato che l'omologia è invariante per riordinamento dei vertici (un morfismo di insiemi simpliciali ne induce uno anche sui rispettivi \(C_k\)) e\\ \[H_0(X,\mathbb{R})\cong\mathbb{R}^{\textit{numero di componenti connesse}}\]
+Intuitivamente \(H_1\) rappresenta il numero di triangoli con interno vuoto (ovvero tre 1-simplessi che non formano un 2-simpesso), \(H_2\) il numero di tetraedri con interno vuoto e così via, il che fornisce un'idea geometrica e spaziale sempre più accurata di come i dati siano distribuiti.
+\subsection{Forma normale di Smith}
+\textbf{Teorema}: Sia \(A\in\mathbb{Z}^{n\times m}\). Allora esistono \textit{S}, \textit{T} matrici invertibili in \(\mathbb{Z}\) tali che
+\[A=SDT\ , \ D=\begin{pmatrix}d_1 & 0 & 0 & ... & 0\\
+0 & d_2 & 0 & ... & 0\\
+... \\
+0 & 0 & ... & d_k & 0\\
+0 & 0 & ... & 0 & 0\\
+0 & 0 & ... & 0 & 0
+\end{pmatrix}\]
+con \(d_i\) determinati univocamente e tali che \(d_i|d_{i+1}\)\ .\\ 
+Un possibile algoritmo per determinare le due matrici è il seguente: (INSERIRE CODICE)\\ \\
+Il vantaggio di questa scomposizione è che determina l'omologia del complesso simpliciale associato anche se come anello commutativo si prende \(\mathbb{Z}\): \[H_n\cong \mathbb{Z}^r \oplus\mathbb{Z}/(d_1)\ \oplus\ ...\ \oplus \mathbb{Z}/(d_k)\ ,\]
+dove \textit{r} è un numero da determinare e gli ideali che quozientano sono generati dagli elementi diagonali non nulli della matrice \textit{D} della forma di Smith. (INSERIRE CODICE)
+\subsection{Categorie, funtori e moduli di persistenza}
+Nello studio dei dati che ci siamo posti ad inizio corso molto spesso bisogna tenere conto che le informazioni sono variabili nel tempo (aumentano i dati, si modificano nel tempo etc.). Per studiare questa variante più formalmente si introducono i concetti di \textbf{categoria}, ovvero un insieme di oggetti (nel nostro caso specifico complessi simpliciali, complessi di moduli o spazi vettoriali), e di \textbf{funtore}, una applicazione \(F:C\rightarrow D\) tra due categorie con le seguenti proprietà:
+\begin{enumerate}
+\item \(\forall f:X\rightarrow Y\) in \textit{C} \(F(f):F(X)\rightarrow F(Y)\) in \textit{D}
+\item \(F(Id_X)=Id_{F(X)}\)
+\item \(F(f\circ g)=F(f)\circ F(g)\)
+\end{enumerate}
+\textbf{Nota}: \(H_k\) è un funtore dalla categoria dei complessi di moduli alla categoria dei moduli.\\ \\ Come categoria di partenza consideriamo ora un insieme di tempi \(\left\{t_0,t_1,...,t_n\right\}\) con l'ordinamento totale determinato dal \(\le\) e come categoria di arrivo l'insieme degli spazi vettoriali; una struttura del genere si definisce \textbf{modulo di persistenza}. Questo permette di creare la seguente catena di relazioni:
+\[(\left\{t_0,...,t_n\right\},\le)\rightarrow \textit{insiemi simpliciali}\xrightarrow{C_.(.\ ,\ \mathbb{Q})} \textit{complessi di moduli}\xrightarrow{H_.}\textit{spazi vettoriali}\ ,\]
+ovvero come variano nel tempo i dati forniti.\\ \\
+Poichè gli spazi vettoriali sono univocamente determinati (a meno di isomorfismi) dalla loro dimensione è nuovamente possibile passare alle matrici associate: (INSERIRE CODICE)\\ \\
+Sfruttando tutto ciò che stato detto finora concludiamo mostrando un algoritmo che crea il \textbf{barcode} di una omologia partendo da un complesso simpliciale determinato dalla matrice di adiacenza variabile lungo l'insieme ordinato di tempi \(\left\{t_0\le t_1\le \ ...\ \le t_n\right\}\). L'output rappresenta, tramite linee di diversa lunghezza, il tempo in cui l'omologia presa in analisi persiste (nel caso di \(H_0\) mostreranno per quanto tempo ogni vertice resta una componente connessa prima di far parte di un 1-simplesso) sfruttando le matrici \(\beta\) e \(\mu\), dove \[\beta_{i,j}=rg(\varphi_{i\rightarrow j})\ ,\] \[\mu_{i,j}=\beta_{i,j+1}+\beta_{i-1,j}-\beta_{i,j}-\beta_{i-1,j-1}\ .\](INSERIRE CODICE) 
+
+
+
+\section{Algebra: crittografia}
+In questa parte del corso si analizzano i principali metodi crittografici sviluppati nel corso del tempo. Per capire a fondo se un codice rende sicuro o meno uno scambio di informazioni sono necessarie alcuni concetti algebrici che sono riportati nelle seguenti sezioni anche attraverso codici che implementano le definizioni astratte.
+\subsection{Ideali su \mathbb{Z}, MCD e identità di Bézout}
+\textbf{Definizioni}: Sia \textit{A} un anello commutativo. \(I\subset A\) si dice \textbf{ideale} se\\ \begin{enumerate}
+\item \((I,+)\ \textit{sottogruppo di}\ (A,+)\)
+\item \(i\in I\ ,\ a\in A\Rightarrow ai\in I \)
+\end{enumerate}
+Dalla definizione si deduce che l'intersezione di ideali è ancora un ideale, è quindi ben definito, preso \(S\subset A\), \textbf{l'ideale generato da S}:
+\[<S>\ :=\ \bigcap_{S\subset I} I\ ,\ \ I\ ideale\]
+L'ideale generato da \textit{S} può anche essere identificato con l'insieme delle combinazioni lineari degli elementi in \textit{S} a coefficienti in \textit{A}, in particolare se \(d\in A\) allora \((d):= \ <\left\{d\right\}>\ =\left\{ad \ |a\in A\right\}\) si dice \textbf{ideale principale}.\\ \\
+Nel corso abbiamo dimostrato che \(\mathbb{Z}\) è a ideali principali, ovvero ogni suo ideale è della forma \((d)\) con \(d\in\mathbb{Z}\)\ , quindi se si considera un ideale della forma \((a,b)\) esiste un altro numero \textit{d} unico a meno del segno, che risulta essere il loro \textbf{MCD}, tale che \((a,b)=(d)\).\\ Per determinare il MCD si può applicare l'algoritmo euclideo delle divisioni successive, metodo applicato nel seguente codice: (INSERIRE CODICE)\\ \\
+Ripercorrendo all'indietro i passaggi dell'algoritmo euclideo si possono determinare due coefficienti interi \textit{x} e \textit{y} tali che \((a,b)=(d)\Rightarrow d=ax+by\), dove quest'ultima relazione prende il nome di \textbf{identità di Bèzout}, estremamente utile per determinare gli inversi degli elementi in \((\mathbb{Z}_{(n)})^*\). (INSERIRE CODICI)\\ \\
+\subsection{Teorema cinese dei resti}
+\textbf{Teorema (versione 1)}: Siano \(a_1,a_2,...,a_n\in\mathbb{Z}\) tali che \((a_i,a_j)=1\ \forall i\neq j\). Allora
+\[\mathbb{Z}/(a_1,a_2,...,a_n)\cong \mathbb{Z}/(a_1)\oplus\mathbb{Z}/(a_2)\oplus...\oplus\mathbb{Z}/(a_n)\]\\
+\textbf{Teorema (versione 2)}:  Siano \(a_1,a_2,...,a_n,\alpha_1,...,\alpha_n\in\mathbb{Z}\) con \((a_i,a_j)=1\ \forall i\neq j\). Allora il sistema di congruenze \(\left\{x\equiv \alpha_i\ mod\ a_i\ |\ i=1,...,n\right\}\) ammette un'unica soluzione \(mod\ a_1a_2...a_n\).\\ \\
+Le due formulazioni sono equivalenti grazie all'identità di Bézout e la seconda è facilmente implementabile. (INSERIRE CODICE)\\ \\
+\subsection{Test di primalità}
+\subsubsection{Test di Fermat}
+Se \(p\ge 3\) è un numero primo allora \(\left|(\mathbb{Z}/(p))\right|=p-1\) essendo un campo; conseguentemente, fissato \(n\in\mathbb{Z}\), se esiste \(a\in\left\{2,...,n-2\right\}\) tale che \[a^{n-1}\not\equiv 1\ mod\ n\]
+allora n è necessariamente un numero composto (in tal caso \textit{a} si dice \textbf{testimone di Fermat}).\\ \textbf{Nota}: esistono dei numeri, detti \textbf{pseudoprimi di Fermat}, che non forniscono una prova di non-primalità per ogni scelta di \textit{a}.
+(INSERIRE CODICE)\\ 
+\subsubsection{Test di Eulero}
+Ripercorrendo la strategia nel test di Fermat ci si può accorgere che \(a^{n-1}\equiv 1\ mod\ n\Rightarrow a^{\frac{n-1}{2}}\in \left\{1,-1\right\}\ mod\ n\), quindi se esiste un \textit{a} tale che 
+\[a^{\frac{n-1}{2}}\not\in \left\{1,-1\right\}\ mod\ n\]
+allora n è un numero composto.\\ \textbf{Nota}: questo test è più forte di quello di Fermat, ma esistono comunque degli pseudoprimi di Eulero. (INSERIRE CODICE)\\
+\subsubsection{Test di Solovay-Strassen}
+Con questo metodo si raffina la tecnica del test di Eulero sfruttando le proprietà del simbolo di Jacobi e del simbolo di Legendre. Nel corso infatti è stato dimostrato che se \textit{p} è primo allora \[a^{\frac{p-1}{2}}\equiv \left(\frac{a}{p}\right)\ mod\ p\]
+Come per gli altri test, fissato un intero \textit{n}, basta dunque trovare un \textit{a} che falsifica la relazione sopra per ottenere la non-primalità.\\
+\textbf{Nota}: per questo test non esistono pseudoprimi, infatti per ogni scelta di \textit{n} almeno la metà degli \(a\in\left\{2,...,n-1\right\}\) fà da testimone. (INSERIRE CODICE)\\
+\subsubsection{Test di Miller-Rabin}
+Sia \(n=2^hd+1\) con \textit{d} dispari e, fissato \textit{a}, si consideri \(\alpha=a^d\) e la successione 
+\[(\alpha,\alpha^2,...,\alpha^{n-1})\]
+Se \(\alpha\not= 1\) (si pensi tutto \(mod\ n\)) ci sono 2 casi possibili:\\ \\ Caso 1): nella successione non appare mai 1. In tal caso fallisce il test di Fermat ed n risulta composto.\\ \\ Caso 2): esiste un primo elemento della successione che vale 1 (i successivi saranno necessariamente tutti 1). Allora, chiamando\(\beta\) l'elemento precedente al primo 1, necessariamente \[\beta=-1\]
+Se quindi si trova un \textit{a} per cui \(\beta\not= -1\) il test afferma che n non è primo.\\\textbf{Nota}: i testimoni di Solovay-Strassen lo sono anche per questo test, inoltre almeno tre quarti dei possibili \textit{a} sono testimoni di Miller-Rabin. (INSERIRE CODICE)\\
+\subsection{Fattorizzazione di numeri composti}
+Una volta scoperto che \textit{n} è un numero composto si può pensare di cercare un suo divisore proprio. Di seguito sono riportati i metodi visti nel corso.
+\subsubsection{Metodo rho di Pollard}
+Fissato un primo \textit{p} ed un numero composto \textit{n} si cercano due numeri \(x,y\in\mathbb{Z}/(n)\) tali che \(x\not\equiv y\ mod\ n\) e \(x\equiv y\ mod\ p\). Se ciò avviene allora esiste \(1<d<n\) tale che \[(n,x-y)=(d)\Rightarrow d|n\]
+Un modo efficace per cercare \textit{x} ed \textit{y} è creare due successioni di valori tramite una funzione di partenza (per esempio \(x^2+x+1\)) e controllare la condizione sopra ad ogni iterazione, creando la caratteristica forma di rho. Nel seguente codice il metodo è implementato seguendo la strategia di Floyd, la quale permette di avere una convergenza più rapida: (INSERIRE CODICE)\\
+\subsubsection{Basi di primi di Pomerance}
+La chiave di questo metodo è il fatto che scomporre un numero dispari equivale a scriverlo come differenza di quadrati: se \(n=a^2-b^2\) allora \textit{n} ha come divisori \(a+b\) e \(a-b\). Se invece \(n=d*e\) allora posso risolvere il sistema lineare 
+\[a+b=d\ ,\ a-b=e\]
+il quale ammette come soluzione un'unica coppia \((a,b)\).\\ 
+Si scelgano dunque \(a,b\in\left\{0,...,n-1\right\}\) distinti, allora \((a-b,n)\in\left\{1,d\right\}\) con \textit{d} divisore proprio di \textit{n}.
+Bisogna quindi scegliere i due valori affinchè risolvano 
+\[a^2-b^2\equiv 0\ mod\ n \] in modo non banale.
+Per fare ciò si seleziona una base di primi arbitrariamente lunga e dei valori i cui quadrati sono "piccoli" modulo \textit{n}, ottenibili attraverso lo sviluppo in frazione continua (facilmente implementabile nel caso di radici di interi. (INSERIRE CODICI)
+\subsubsection{Metodo \(p-1\) di Pollard}
+(INSERIRE CODICE)\\
+\subsubsection{Algoritmo di Lenstra}
+Si basa sulla costruzione di una curva ellittica \(y^2=x^3+ax+b\) a coefficienti nel campo \(\mathbb{F}_p\) con \textit{p} primo scelto in una lista predefinita. L'insieme di queste curve ha una struttura di gruppo naturale che può essere sfruttata per trovare un divisore di n, inoltre si può fare uso del logaritmo discreto su campi finiti per alleggerire i conti. (INSERIRE CODICi)\\
+\subsection{Sistema a chiave pubblica RSA}
+La base dei sistemi crittografici a chiave pubblica è il seguente: due persone A e B vogliono scambiarsi un messaggio in modo da evitare che un osservatore esterno E possa intercettarlo e decifrarlo facilmente. Il metodo attualmente usato è quello RSA, il quale trae la sua forza dal fatto che fattorizzare un intero con un numero di cifre elevato (come si può verificare dai codici mostrati in precedenza) è molto laborioso.\\ \\ Fasi dello scambio:\\
+1) A sceglie due primi \textit{p} e \textit{q} molto grandi, calcola \(n=pq\) , \(\varphi(n)=(p-1)(q-1)\), sceglie \(e\in(\mathbb{Z}/(\varphi(n))^*\), calcola \textit{d} tale che \([e][d]=1\) e rende pubblici \textit{n} ed \textit{e}.\\
+2) B sceglie il messaggio \([x]\in\mathbb{Z}/(n)\) con una conversione di dominio pubblico, calcola \([y]=[x^e]\ mod\ n\) e rende pubblico \([y]\).\\
+3) A riceve \([y]\) e ricava \([x^e]^d=[x^{ed}]=[x]\), ottenendo il messaggio inviato da B (per esempio una chiave privata per futuri messaggi).\\ \\
+In questi passaggi E per risalire al messaggio di B non può far altro che scomporre \textit{n} o calcolare manualmente \(\varphi(n)\), azioni equivalenti e quindi ugualmente impegnative.
+
+\end{document}

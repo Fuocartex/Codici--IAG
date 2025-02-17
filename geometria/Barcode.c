@@ -49,8 +49,8 @@ int main()
 	//calcolo la matrice mu
 	int** mu = NULL;
 	mu = mu_matrix(matrix, dim);
-	//printf("mu\n");
-	//print_matrix(mu, dim, dim);
+	printf("mu\n");
+	print_matrix(mu, dim, dim);
 	//printf("beta_i_j = %d\n", h);
 
 	//da qui passo la matrice ad un file python che mi stampa il barcode molto più efficiente di c in questo

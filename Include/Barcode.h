@@ -193,7 +193,7 @@
 		//print_matrix(phi_i_j, sc2[h].size, sc1[h].size);
 
 		int** edge1 = NULL;
-		int** rank_edge1 = NULL;
+		int** kernel_edge1 = NULL;
 		int colonne_base_rango = 0;
 		//mi devo calcolare la matrice di bordo del complesso simpliciale i 
 		// tra i simplessi h e h -1
@@ -203,21 +203,21 @@
 			//edge1 = input_id(edge1, sc1[h].size);
 			edge1 = input_null(edge1, sc1[h].size, sc1[h].size);
 			//print_matrix(edge1, sc1[h].size, sc1[h].size);
-			rank_edge1 = input_id(rank_edge1, sc1[h].size);
+			kernel_edge1 = input_id(kernel_edge1, sc1[h].size);
 			colonne_base_rango = sc1[h].size;
 		}
 		else {
 			edge1 = edge_Matrix(sc1, h);
-			rank_edge1 = rank_base(edge1, sc1[h - 1].size, sc1[h].size, &colonne_base_rango);
+			kernel_edge1 = kernel_base(edge1, sc1[h - 1].size, sc1[h].size, &colonne_base_rango);
 		}
 
 		//se il nucleo è nullo bij = 0 perchè non ho simplessi da dove sono partito
-		if (!rank_edge1)
+		if (!kernel_edge1)
 			return 0;
 
 		//altrimenti applico il cambiamento di base al nucleo
 		int** matrix_j = NULL;
-		matrix_j = mul_matrix(phi_i_j, sc2[h].size, sc1[h].size, rank_edge1, sc1[h].size, colonne_base_rango);
+		matrix_j = mul_matrix(phi_i_j, sc2[h].size, sc1[h].size, kernel_edge1, sc1[h].size, colonne_base_rango);
 		
 		//non resta che applicare f e calolcare i rispettivi ranghi
 		int** edge2 = NULL;

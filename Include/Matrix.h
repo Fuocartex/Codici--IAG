@@ -1,7 +1,11 @@
 #pragma once
 #ifndef Matrix
 	#define Matrix
-	#include "..\Include\Smith.h"
+	
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <stdbool.h>
+    #include "..\Include\Smith.h"
 
 	// Funzioni per la manipolazione delle matrici
 	int** mul_matrix(int**, int, int, int**, int, int);
@@ -9,11 +13,13 @@
 	void gauss(float**, int);
 	int det_matrix_triangular(int**, int);
     int rank_matrix_diag(int**, int, int);
-	int** rank_base(int**, int, int, int*);
+	int** kernel_base(int**, int, int, int*);
 	int** link2matrix_same_row(int**, int, int, int**, int, int);
 	int rank_matrix(int**, int, int);
 	char* matrix_to_json(int**, int); // Funzione per convertire una matrice in una stringa JSON per passarla a python
 	
+
+    //Funzione per calcolare la moltiplicazione tra due matrici
 	int** mul_matrix(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		if (col1 != row2) {
 			return NULL;
@@ -33,6 +39,7 @@
 		return result;
 	}
 
+	//Funzione per stampare una matrice
 	void print_matrix(int** matrix, int row, int col) {
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
@@ -101,7 +108,7 @@
             // Elimina tutti gli altri elementi nella colonna i
             for (int k = 0; k < size; k++) {
                 if (k != i && A[k][i] != 0) {
-                    int factor = A[k][i];  // in una matrice unimodulare dovrebbe essere ±1
+                    int factor = A[k][i];  // in una matrice unimodulare dovrebbe essere più o meno 1
                     for (int j = 0; j < size; j++) {
                         A[k][j] -= factor * A[i][j];
                         inv[k][j] -= factor * inv[i][j];
@@ -114,6 +121,7 @@
         return inv;
     }
 
+    //Funzioni per calcolare l'eliminazione di gauss
     void gauss(float** matrice, int n) {
         for (int i = 0; i < n; i++) {
             // Pivot
@@ -147,6 +155,7 @@
         }
     }
 
+    //Funzione per calcolare Gauss di una matrice rettangolare senza scambiare le righe quindi non viene con le righe in ordine
 	void gauss_rectangular(int** matrice, int row, int col) {
 		int r = 0;
 		for (int i = 0; i < col; i++) {
@@ -183,7 +192,7 @@
 		}
 	}
 
-	
+	//Funzione per calcolare il determinante di una matrice triangolare
 	int det_matrix_triangular(int** matrice, int n) {
 		int det = 1;
 		for (int i = 0; i < n; i++) {
@@ -192,6 +201,7 @@
 		return det;
 	}
 
+	//Funzione per calcolare il rango di una matrice diagonale
     int rank_matrix_diag(int** matrix, int row, int col) {
         int r = 0;
         for (int i = 0; i < my_min(row, col); i++) {
@@ -201,7 +211,8 @@
         return r;
     }
 
-    int** rank_base(int** M, int r, int c, int *n) {
+	//Funzione per trovare una base del kernel di una matrice
+    int** kernel_base(int** M, int r, int c, int *n) {
         int** D = NULL;
         int** S = NULL;
         int** T = NULL;
@@ -220,6 +231,9 @@
         SmithNormalForm(D, S, T, r, c);
         int rk = rank_matrix_diag(D, r, c);
 
+        //calcolo la forma normale di smith e trovo il rango tramite la matrice diagonale
+		//la base sarà data ultime rk colonne di T
+
 		int** B = NULL;
 		if (c - rk == 0) {
 			free(D);
@@ -234,7 +248,7 @@
 			}
 		}
 
-		print_matrix(B, c, c - rk);
+		//print_matrix(B, c, c - rk);
        
 		free(D);
 		free(S);
@@ -243,6 +257,8 @@
 		return B;
     }
 
+
+	//Funzione per concatenare due matrici con lo stesso numero di righe
 	int** link2matrix_same_row(int** matrix1, int row1, int col1, int** matrix2, int row2, int col2) {
 		int** result = NULL;
 		if (row1 != row2) {
@@ -261,6 +277,8 @@
 		return result;
 	}
 
+	//Funzione per calcolare il rango di una matrice tramite smith 
+    //portiamo la amtrice in forma diagonale e calcoliamo il rango della matrice diagonale molto più veloce
 	int rank_matrix(int** M, int r, int c) {
         int** D = NULL;
         int** S = NULL;

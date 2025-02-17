@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#pragma warning(disable:4146)
 #include <gmp.h>
 
 // Struttura per memorizzare un baby step: (valore, esponente)
