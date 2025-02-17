@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include <gmp.h>
 #include "..\Include\mcd.h"
 
@@ -25,7 +26,7 @@ int main () {
 	}
    	
   	// Pulizia della memoria
-	mpz_clears(n, d, NULL);
+	mpz_clears(n, d, r, NULL);
 		
 	return 0; 
 }
@@ -35,28 +36,19 @@ bool p1_pollard (mpz_t d, mpz_t n) {
 	mpz_inits(b, b0, b1, a, m, y, it, NULL);
 	mpz_set_si(a, 2);
 	mpz_set_si(m, 1);
-	//mpz_set_si(b0, 2);
-	//mpz_set_si(b1, 66); // perchè la lista dei primi va fino a 61 (da 67 in poi non ci sono)
 	mpz_set_si(b, 2);
-	int primes[18] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61};
+	int primes[18] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61}; 
 	
-	mpz_t it_max; 
-	mpz_inits(it_max, NULL);
-	mpz_set_si(it_max, 1000);
-	
-	while (mpz_cmp(b, n)<0) { // finchè it < it_max
-		//RandNumber(b, b0, b1);
-		//gmp_printf("b=%Zd\n", b);	
+	while (mpz_cmp(b, n)<0) { 
+		// cerco m tc m sia la produttoria su i di p_i^e_i con p_i primi e p_i^e_i < b 
+		// tuttavia essendo la base di primi limitata, da 61 in poi tutti per tutti i primi è come se prendessimo e_i=0
 		for (int i=0; i<18; i++) {
 			if (mpz_cmp_si(b, primes[i])<0) { // appena b > primes[i] interrompo il for
 				break; 
-			} else { // finchè b < primes(i)
-				mpz_t e, base; 
-				mpz_inits(e, base, NULL);
-			    	mpz_set_si(base, primes[i]);  // Converti int in mpz_t
-				mpz_pow_ui(e, base, strlen(mpz_get_str(NULL,primes[i],b))-1);
-				mpz_mul(m, m, e);  // m = m * e
-				mpz_clears(e, NULL);
+			} else { // finchè b < primes(i) 
+				int e; 
+				e=pow(primes[i], strlen(mpz_get_str(NULL,primes[i],b))-1);
+				mpz_mul_ui(m, m, e);  // m = m * e
 			}
 		}
 
@@ -65,7 +57,6 @@ bool p1_pollard (mpz_t d, mpz_t n) {
 		mpz_sub_ui(y, y, 1);
 
 		mcd_euclide(d, y, n); // d = MCD(a^m-1, n)
-		// gmp_printf("d=%Zd\n", d);
 		if (mpz_cmp_si(d, 1)!=0 && (mpz_cmp(d, n)!=0)) {
 			return true; 
 		}

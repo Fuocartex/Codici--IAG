@@ -172,7 +172,7 @@ void add_k_simplices_adjacency_matrix (SimplicialComplex* complex, int** M, int 
     // ricerco i k-simplessi da aggiungere:
 
     Simplex* previous_simplex = complex[k-1].simplices; // scorrerà i (k-1)-simplessi
-    Simplex *current, *new_simplex; // current sarà un puntatore all'ultimo elemento della lista dei k-simplessi, new_simplex servirà per creare quelli da aggiungere
+    Simplex *current = NULL, *new_simplex; // current sarà un puntatore all'ultimo elemento della lista dei k-simplessi, new_simplex servirà per creare quelli da aggiungere
     while (previous_simplex!=NULL) { // per costruire i k-simplessi devo partire dai (k-1)-simplessi
 
         // cerco nuovi vertici a partire da quelli successivi all'ultimo gia' presente (funziona se il complesso e' ordinato)

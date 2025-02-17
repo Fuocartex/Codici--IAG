@@ -87,18 +87,22 @@
         void printComplex(SimplicialComplex* complex, int size){
 	        Simplex* app;
 		        for (int i = 0; i < size; i++) {
+					printf("%d-simplessi\n", i);
+					printf("size = %d\n", complex[i].size);
 			        app = complex[i].simplices;
-			        printf("{ ");
-			        while (app) {
-                        printf("( ");
-				        for (int j = 0; j <= i; j++)
-					        printf("%d ", app->vertices[j]);
-                        printf(")");
-				        app = app->next;
-				        if(app)
-					        printf(", ");
-			        }
-			        printf("}\n");
+                    if (app) {
+                        printf("{ ");
+                        while (app) {
+                            printf("( ");
+                            for (int j = 0; j <= i; j++)
+                                printf("%d ", app->vertices[j]);
+                            printf(")");
+                            app = app->next;
+                            if (app)
+                                printf(", ");
+                        }
+                        printf(" }\n");
+                    }
 		        }
 	        return;
         }
@@ -193,6 +197,7 @@
             return head;
         }
 
+        //stessa funzione di sopra ma leggo da file
         Simplex* createSimplex_file(int size, int n, FILE* f) {
             Simplex* simplex, * head, * app;
             simplex = (Simplex*)malloc(sizeof(Simplex));
@@ -226,27 +231,27 @@
 		int** edge_Matrix(SimplicialComplex* sc, int n) {
             int i = 0, j = 0, k = -1, row = sc[n - 1].size, col = sc[n].size;
             int** matrix;
-            matrix = calloc(row,sizeof(int*));
+            matrix = (int**)calloc(row,sizeof(int*));
 			Simplex* Nsimp, * Nmosimp;
 			int* v = (int*)malloc(n * sizeof(int));
 			Nsimp = sc[n].simplices;
 			Nmosimp = sc[n - 1].simplices;
 			//itero i vari n-simplessi
             for (int i = 0; i < row; i++)
-                matrix[i] = calloc(col, sizeof(int));
-            for (int i = 0; i < sc[n].size; i++) {
-				//itero i vari n-1-simplessi
-				//creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
-                for (int j = 0; j <= n; j++) {
-					v = creasubs(Nsimp->vertices, j, n);
-					k = base_number(Nmosimp, v, n);
-					//printf("k = %d\n", k);
-                    if (k != -1) {
-                        matrix[k][i] = pow(-1, j);
+                matrix[i] = (int*)calloc(col, sizeof(int));
+                for (int i = 0; i < sc[n].size; i++) {
+				    //itero i vari n-1-simplessi
+				    //creo i sotto inisiemi di ciascun simplesso e vedo che posizione ha nella base
+                    for (int j = 0; j <= n; j++) {
+					    v = creasubs(Nsimp->vertices, j, n);
+					    k = base_number(Nmosimp, v, n);
+					    //printf("k = %d\n", k);
+                        if (k != -1) {
+                            matrix[k][i] = pow(-1, j);
+                        }
                     }
-                }
-				Nsimp = Nsimp->next;
-			}
+				    Nsimp = Nsimp->next;
+			    }
 			return matrix;
 		}
 
@@ -270,7 +275,8 @@
             }
         }
 
-		// Funzione per calcolare il rango di una matrice
+		/*
+        // Funzione per calcolare il rango di una matrice
 		int matrix_rank(int** matrix, int rows, int cols) {
             int rank = cols;  // Inizialmente assumiamo il rango massimo possibile
 
@@ -312,7 +318,7 @@
             }
 
             return rank;
-		}
+		}*/
 #pragma endregion
 
 #endif

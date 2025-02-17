@@ -19,16 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Barcode.h" />
     <ClInclude Include="Include\Bezout.h" />
+    <ClInclude Include="Include\Complesso_da_1_simplessi.h" />
     <ClInclude Include="Include\Compl_Simpl.h" />
     <ClInclude Include="Include\Create_Factor.h" />
     <ClInclude Include="Include\Fermat.h" />
+    <ClInclude Include="Include\Fermat_old.h" />
     <ClInclude Include="Include\Matrix.h" />
     <ClInclude Include="Include\Omo.h" />
     <ClInclude Include="Include\Smith.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="geometria\Omologie.c" />
+    <ClCompile Include="geometria\Barcode.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -116,10 +119,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\sbona\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\sbona\vcpkg\installed\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gmp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

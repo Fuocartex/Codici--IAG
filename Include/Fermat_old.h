@@ -112,7 +112,6 @@ bool fermat (long int n, int it_max) {
 			long int c=congruenza_a(a, n-1, n);
 			if(c!=1) {
 				printf("%ld non è un numero primo\n", n);
-				printf("it=%d, a=%ld, c=%ld\n", it, a, c);
 				return false; 
 			} else {
 				a=change_a(a, max, min); 
@@ -121,7 +120,6 @@ bool fermat (long int n, int it_max) {
 	}
 	return true; 
 }
-
 
 long int MCD(long int a, long int b) {
 	long int temp=0; 
