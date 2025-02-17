@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "..\Include\Smith.h"
-#include "..\Include\Bezout.h"
+#include "..\Include\Bezout_old.h"
 
 int** input_sys (int**, int);
 void print_sys (int**, int);
-int* input_vec (int*, int);
+int* input_vec_zeros (int*, int);
 int* input_vec_one (int*, int);
 void solve_sys (int**, int*, int*, int*, int*, int);
 int adjust_sol (int, int);
@@ -21,14 +21,14 @@ int main() {
 	print_sys(sys, m);
 	
 	// vettori necessari per la risoluzione del sistema 
-	int *A=NULL; 
-	A=input_vec(A, m);
-	int *B=NULL; 
+	int *A=NULL; // sono i moduli delle singole equazioni
+	A=input_vec_zeros(A, m);
+	int *B=NULL; // B[i] è il prodotto di A[j] con j!=i
 	B=input_vec_one(B, m);
-	int *Alpha=NULL; 
-	Alpha=input_vec(Alpha, m);
-	int *Gamma=NULL; 
-	Gamma=input_vec(Gamma, m);	
+	int *Alpha=NULL; // sono le congruenze delle singole equazioni
+	Alpha=input_vec_zeros(Alpha, m);
+	int *Gamma=NULL; // conterrà la prima riga di S dopo aver applicato Smith a B
+	Gamma=input_vec_zeros(Gamma, m);	
 	solve_sys(sys, A, B, Alpha, Gamma, m);
 	
 	// troviamo la soluzione x
@@ -73,7 +73,7 @@ void print_sys (int** sys, int m) {
 }
 
 // inizializzare un vettore nullo di m componenti 
-int* input_vec (int *vec, int m) {
+int* input_vec_zeros (int *vec, int m) {
 	vec=calloc(m, sizeof(int)); 
 	return vec;
 }

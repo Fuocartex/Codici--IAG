@@ -26,8 +26,8 @@ int main() {
 }
 
 void rho_pollard (mpz_t x, mpz_t g, mpz_t h, mpz_t p) {
-	mpz_t gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it, it_max; 
-	mpz_inits(gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it, it_max, NULL);
+	mpz_t gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it; 
+	mpz_inits(gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it, NULL);
 	
 	mpz_set_si(gamma, 1); // poniamo gamma = 1
 	mpz_set_si(a, 0); // poniamo a = 0
@@ -39,11 +39,10 @@ void rho_pollard (mpz_t x, mpz_t g, mpz_t h, mpz_t p) {
 	
 	mpz_sub_ui(p1, p, 1); // p1 = p - 1;
 	mpz_set_si(it, 0);
-	mpz_set_si(it_max, 1000);
 	
 	bool test=false; 
 
-	while (mpz_cmp(it, it_max)<0) {
+	while (mpz_cmp(it, p)<0) {
 		funz(gamma, a, b, p, p1, g, h);
 		funz(lambda, alpha, beta, p, p1, g, h); 
 		funz(lambda, alpha, beta, p, p1, g, h); // si muove al doppio della velocità
@@ -90,7 +89,7 @@ void rho_pollard (mpz_t x, mpz_t g, mpz_t h, mpz_t p) {
 		mpz_add_ui(it, it, 1);				
 	}
 	
-	mpz_clears(gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it, it_max, NULL);
+	mpz_clears(gamma, a, b, lambda, alpha, beta, p1, temp_a, temp_b, invb, d, c, invc, pd, ad, temp, it, NULL);
 	return;
 }
 

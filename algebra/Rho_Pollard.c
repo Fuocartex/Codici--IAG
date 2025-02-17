@@ -42,7 +42,7 @@ bool rho_pollard (mpz_t d, mpz_t n) {
 	mpz_set_si(y, 1); // poniamo y = 1
 	mpz_set_si(it, 0); // poniamo it = 0
 	
-	while (mpz_cmp(it, n)<0) { // finchè it < it_max
+	while (mpz_cmp(it, n)<0) { // facciamo massimo n iterazioni
 		// Calcoliamo f(x) e g(x)
     		funz_f(f, x, n);
     		funz_g(g, y, n);
