@@ -16,12 +16,12 @@
 \contentsline {subsection}{\numberline {2.4}Fattorizzazione di numeri composti}{66}{subsection.2.4}%
 \contentsline {subsubsection}{\numberline {2.4.1}Metodo rho di Pollard}{66}{subsubsection.2.4.1}%
 \contentsline {subsubsection}{\numberline {2.4.2}Basi di primi di Pomerance}{67}{subsubsection.2.4.2}%
-\contentsline {subsubsection}{\numberline {2.4.3}Metodo \(p-1\) di Pollard}{68}{subsubsection.2.4.3}%
-\contentsline {subsubsection}{\numberline {2.4.4}Algoritmo di Lenstra}{69}{subsubsection.2.4.4}%
-\contentsline {subsection}{\numberline {2.5}Logaritmo discreto}{74}{subsection.2.5}%
-\contentsline {subsection}{\numberline {2.6}Sistema a chiave pubblica RSA}{82}{subsection.2.6}%
-\contentsline {section}{\numberline {3}Codici ausiliari}{84}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Radici in Zp}{84}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Sistemi di interi}{85}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Frazioni Continue}{87}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Funzioni ausiliarie}{88}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {2.4.3}Metodo \(p-1\) di Pollard}{75}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {2.4.4}Algoritmo di Lenstra}{77}{subsubsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.5}Logaritmo discreto}{84}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Sistema a chiave pubblica RSA}{92}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Codici ausiliari}{93}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Radici in Zp}{93}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Sistemi di interi}{94}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Frazioni Continue}{96}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Funzioni ausiliarie}{97}{subsection.3.4}%

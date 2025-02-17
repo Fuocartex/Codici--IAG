@@ -187,7 +187,12 @@
 	Si scelgano dunque \(a,b\in\left\{0,...,n-1\right\}\) distinti, allora \((a-b,n)\in\left\{1,d\right\}\) con \textit{d} divisore proprio di \textit{n}.
 	Bisogna quindi scegliere i due valori affinchè risolvano 
 	\[a^2-b^2\equiv 0\ mod\ n \] in modo non banale.
-	Per fare ciò si seleziona una base di primi arbitrariamente lunga e dei valori i cui quadrati sono "piccoli" modulo \textit{n}, ottenibili attraverso lo sviluppo in frazione continua (facilmente implementabile nel caso di radici di interi. (INSERIRE CODICI)
+	Per fare ciò si seleziona una base di primi arbitrariamente lunga e dei valori i cui quadrati sono "piccoli" modulo \textit{n}, ottenibili attraverso lo sviluppo in frazione continua (facilmente implementabile nel caso di radici di interi. 
+	
+	\vspace{1cm}
+	\lstinputlisting[caption= Basi primi Pomerance.h]{Include/Basi_primi_Pomerance.h}
+	\vspace{1cm}\vspace{1cm}
+	
 	\subsubsection{Metodo \(p-1\) di Pollard}
 	Il metodo si basa su una "scommessa": ci si chiede se \(n=p_1^{e_1}...p_k^{e_k}\) è \textbf{\textit{b}-liscio}, ovvero se esiste un intero \textit{b} tale che \[p_i^{e_i}\le b\ \forall i\in\left\{1,...,k\right\}\]
 	Se ciò avviene allora si può trovare un divisore proprio di \textit{n} con il seguente metodo.
