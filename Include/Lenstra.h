@@ -1,12 +1,13 @@
 #include <string.h>
+#include <time.h>
 #include "mcd.h"
 #include "Bezout.h"
 
-// Numero di primi da utilizzare nella fattorizzazione di n: deve essere compreso tra 1 e 18 (poiché ho salvato solo una lista dei primi 18
-// numeri primi); A SEGUITO DI TEST SCRIVERò QUI VALORI RAGIONEVOLI
+// Numero di primi da utilizzare nella fattorizzazione di n: deve essere compreso tra 1 e 18 (poiché ho salvato solo una lista dei primi 18 numeri primi)
 #define NUM_PRIMES 4
 
 int lenstra (mpz_t, mpz_t);
+int lenstra_iter (mpz_t, mpz_t);
 
 // funzioni ausiliarie per algoritmo di Lenstra
 int double_elliptic (mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
@@ -18,8 +19,112 @@ void calcola_b (mpz_t, mpz_t, mpz_t, mpz_t, mpz_t);
 void calcola_delta (mpz_t, mpz_t, mpz_t, mpz_t);
 
 // Fattorizza l'intero positivo n utilizzando l'algoritmo di Lenstra basato su curve ellittiche: se riesce restituisce 1 e salva in
-// d un divisore proprio di n, altrimenti restituisce 0.
+// d un divisore proprio di n, altrimenti restituisce 0. Utilizza coefficienti e punti sulle curve ellittiche generati casualmente, ed esegue
+// un numero di iterazioni fissato all'interno della funzione (attualmente 2^30).
 int lenstra (mpz_t d, mpz_t n) {
+
+    // salvo una lista di primi da utilizzare nel tentativo di fattorizzare n: scelgo i primi 18 poiché la funzione mpz_get_str, che uso
+    // per calcolare il logaritmo base p che serve per la stima di Hasse, accetta come secondo argomento solo numeri da 2 a 62. Teoricamente si
+    // può aumentare, ma bisogna trovare un modo alternativo per calcolare la stima, e in ogni caso solitamente bastano pochi primi.
+    int primes[18] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61};
+
+    mpz_t r;
+    mpz_init(r);
+    // faccio due prime divisioni test: nell'algoritmo serve n dispari, e sul libro di Koblitz chiede che i primi che dividano n siano >3.
+    mpz_fdiv_r_ui(r,n,2);
+    if (mpz_cmp_si(r,0)==0) {
+        mpz_set_ui(d,2);
+        mpz_clear(r);
+        return 1;
+    }
+    mpz_fdiv_r_ui(r,n,3);
+    if (mpz_cmp_si(r,0)==0) {
+        mpz_set_ui(d,3);
+        mpz_clear(r);
+        return 1;
+    }
+    mpz_clear(r);
+
+    mpz_t hasse_n,x_P,y_P,a,b,delta,iter,maxiter; // x_P,y_P coordinate del punto P sulla curva ellittica y^2=x^3+ax+b
+    mpz_inits(hasse_n,x_P,y_P,a,b,delta,iter,maxiter,NULL);
+    unsigned int exp_primes[NUM_PRIMES];
+    hasse(hasse_n,n);
+    create_exp_primes(exp_primes,primes,hasse_n); // inizializzo gli esponenti a cui elevare ciascun primo
+    mpz_clear(hasse_n);
+
+    gmp_randstate_t randstate;
+    gmp_randinit_default(randstate);
+    unsigned long int t = time(NULL);
+    gmp_randseed_ui(randstate, t);
+
+    // inizio l'algoritmo di Lenstra
+
+    mpz_set_ui(maxiter,1);
+    mpz_mul_2exp(maxiter,maxiter,30); // testo 2^30 iterazioni
+
+    while (mpz_cmp(iter,maxiter)<0) {
+ 
+        mpz_urandomm(x_P,randstate,n);
+        mpz_urandomm(y_P,randstate,n);
+        mpz_urandomm(a,randstate,n);
+
+        calcola_b(b,x_P,y_P,a,n); // calcolo b affinché P sia sulla curva ellittica
+        calcola_delta(delta,a,b,n); // calcolo discriminante della curva ellittica (mod n)
+
+        if (mpz_cmp_si(delta,0)==0) goto retry; // se delta=0 cambio a e riprovo
+
+        mcd_binario(d,delta,n);
+
+        if (mpz_cmp_si(d,1)!=0) { // se mcd(delta,n) diverso da 1, ho trovato un divisore proprio (ho escluso mcd=n nella condizione precedente)
+            gmp_randclear(randstate);
+            mpz_clears(x_P,y_P,a,b,delta,iter,maxiter,NULL);
+            return 1;
+        }
+
+        // inizio i calcoli P --> m*P
+
+        int i,j,outcome;
+        for (i=0; i<exp_primes[0]; i++) { // calcolo P--> 2^(e_2)*P
+
+            outcome=double_elliptic(d,x_P,y_P,x_P,y_P,a,n);
+            if (outcome==-1) goto retry; // se non posso raddoppiare cambio parametri e riprovo
+            if (outcome==0) { // successo: ho trovato in d un divisore proprio di n
+                gmp_randclear(randstate);
+                mpz_clears(x_P,y_P,a,b,delta,iter,maxiter,NULL);
+                return 1;
+            }
+        }
+
+        // calcolo le potenze con i primi della lista maggiori di 2
+        for (j=1; j<NUM_PRIMES; j++) {
+            for (i=0; i<exp_primes[j]; i++) { // calcolo P-->k^(e_k)*P, con k primo
+
+                outcome=multiply_elliptic(d,x_P,y_P,x_P,y_P,primes[j],a,n);
+                if (outcome==-1) goto retry; // se non posso moltiplicare cambio parametri e riprovo
+                if (outcome==0) { // successo: ho trovato in d un divisore proprio di n
+                    gmp_randclear(randstate);
+                    mpz_clears(x_P,y_P,a,b,delta,iter,maxiter,NULL);
+                    return 1;
+                }
+            }
+        }
+
+        // se arrivo qui ho calcolato mP senza trovare divisori: cambio parametri e riprovo
+
+        retry: mpz_add_ui(iter,iter,1); // aggiorno l'indice di iterazione e cambio parametri
+    }
+
+    // se arrivo qui non ho trovato divisori di n nel numero di iterazioni fissate: fallimento
+
+    gmp_randclear(randstate);
+    mpz_clears(x_P,y_P,a,b,delta,iter,maxiter,NULL);
+    return 0;
+}
+
+// Fattorizza l'intero positivo n utilizzando l'algoritmo di Lenstra basato su curve ellittiche: se riesce restituisce 1 e salva in
+// d un divisore proprio di n, altrimenti restituisce 0. Versione iterativa: considera in ordine tutti i possibili punti e coefficienti
+// per le curve ellittiche.
+int lenstra_iter (mpz_t d, mpz_t n) {
 
     // salvo una lista di primi da utilizzare nel tentativo di fattorizzare n: scelgo i primi 18 poiché la funzione mpz_get_str, che uso
     // per calcolare il logaritmo base p che serve per la stima di Hasse, accetta come secondo argomento solo numeri da 2 a 62. Teoricamente si
@@ -46,6 +151,7 @@ int lenstra (mpz_t d, mpz_t n) {
     mpz_t hasse_n,x_P,y_P,x_iter,y_iter,a,b,delta; // x_P,y_P coordinate del punto P sulla curva ellittica y^2=x^3+ax+b
     mpz_inits(hasse_n,x_P,y_P,x_iter,y_iter,a,b,delta,NULL);
     unsigned int exp_primes[NUM_PRIMES];
+    hasse(hasse_n,n);
     create_exp_primes(exp_primes,primes,hasse_n); // inizializzo gli esponenti a cui elevare ciascun primo
     mpz_clear(hasse_n);
 
@@ -74,6 +180,7 @@ int lenstra (mpz_t d, mpz_t n) {
                 mcd_binario(d,delta,n);
 
                 if (mpz_cmp_si(d,1)!=0) { // se mcd(delta,n) diverso da 1, ho trovato un divisore proprio (ho escluso mcd=n nella condizione precedente)
+                    mpz_clears(x_P,y_P,x_iter,y_iter,a,b,delta,NULL);
                     return 1;
                 }
 
@@ -84,7 +191,10 @@ int lenstra (mpz_t d, mpz_t n) {
 
                     outcome=double_elliptic(d,x_P,y_P,x_P,y_P,a,n);
                     if (outcome==-1) goto retry; // se non posso raddoppiare cambio a e riprovo
-                    if (outcome==0) return 1; // successo: ho trovato in d un divisore proprio di n
+                    if (outcome==0) {
+                        mpz_clears(x_P,y_P,x_iter,y_iter,a,b,delta,NULL);
+                        return 1; // successo: ho trovato in d un divisore proprio di n
+                    }
                 }
 
                 // calcolo le potenze con i primi della lista maggiori di 2
@@ -93,7 +203,10 @@ int lenstra (mpz_t d, mpz_t n) {
 
                         outcome=multiply_elliptic(d,x_P,y_P,x_P,y_P,primes[j],a,n);
                         if (outcome==-1) goto retry; // se non posso moltiplicare cambio a e riprovo
-                        if (outcome==0) return 1; // successo: ho trovato in d un divisore proprio di n
+                        if (outcome==0) {
+                            mpz_clears(x_P,y_P,x_iter,y_iter,a,b,delta,NULL);
+                            return 1; // successo: ho trovato in d un divisore proprio di n
+                        }
                     }
                 }
 
@@ -204,14 +317,26 @@ int multiply_elliptic (mpz_t d, mpz_t x_kP, mpz_t y_kP, mpz_t x_P, mpz_t y_P, in
         if (k&1==1) { // controllo che l'ultimo bit di k sia un 1; se lo è sommo, altrimenti lascio così
 
             outcome=sum_elliptic(d,x_kP,y_kP,x_kP,y_kP,temp1,temp2,n);
-            if (outcome==-1) return -1; // somma non riuscita: devo cambiare curva
-            if (outcome==0) return 0; // successo: ho trovato il divisore d
+            if (outcome==-1) {
+                mpz_clears(temp1,temp2,NULL);
+                return -1; // somma non riuscita: devo cambiare curva
+            }
+            if (outcome==0) {
+                mpz_clears(temp1,temp2,NULL);
+                return 0; // successo: ho trovato il divisore d
+            }
             // altrimenti ho portato a termine la somma con successo, e proseguo i calcoli
         }
         // aggiorno il raddoppio
         outcome=double_elliptic(d,temp1,temp2,temp1,temp2,a,n);
-        if (outcome==-1) return -1; // raddoppio non riuscito: devo cambiare curva
-        if (outcome==0) return 0; // successo: ho trovato il divisore d
+        if (outcome==-1) {
+            mpz_clears(temp1,temp2,NULL);
+            return -1; // raddoppio non riuscito: devo cambiare curva
+        }
+        if (outcome==0) {
+            mpz_clears(temp1,temp2,NULL);
+            return 0; // successo: ho trovato il divisore d
+        }
         // altrimenti ho portato a termine il raddoppio con successo, e proseguo i calcoli
 
         k>>=1; // shifto di 1 i bit di k
