@@ -18,7 +18,7 @@ int main()
 	printf("Quale omologia vuoi calcolare? h = ");
 	scanf("%d", &h);
 
-	printf("Usando la matrice delle distanze si ottengono le H > 0 tutte nulle fino a quale k vuoi calcolare i complessi simpliciali? max = ");
+	printf("Fino a quale k vuoi calcolare i complessi simpliciali? max = ");
 	scanf("%d", &max);
 
 	//stampo la matrice delle distanze
