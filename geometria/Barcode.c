@@ -7,14 +7,27 @@ int main()
     int** m = NULL;
 	int* k = 0;
 	double* l_max = malloc(sizeof(double));
+	int dim_rn = 0;
 	//salvo in m i punti di un piano cartesiano di cui voglio studiare la topologia
-	m = input_point(&k);
+	//m = input_point(&k);
+	printf("Inserisci la dimensione di R^n: ");
+	scanf("%d", &dim_rn);
+	m = input_point_rn(&k, dim_rn);
 	int n = k, h = 0, max = 0;
+	
     double** d = NULL;
-	
 	//calcolo la matrice delle distanze
-    d = distance_matrix(m, n);
+    d = distance_matrix_rn(m, n, dim_rn);
 	
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			printf("%lf ", d[i][j]);
+		}
+		printf("\n");
+	}
+
 	printf("Quale omologia vuoi calcolare? h = ");
 	scanf("%d", &h);
 
@@ -45,7 +58,8 @@ int main()
 	int lambda = ceil(l_max[0]);
 	matrix = beta_matrix(0, lambda, 0.5, mod_p, h, max);
 	int dim = lambda / 0.5 + 2;
-
+	printf("beta\n");
+	print_matrix(matrix, dim, dim);
 	//calcolo la matrice mu
 	int** mu = NULL;
 	mu = mu_matrix(matrix, dim);

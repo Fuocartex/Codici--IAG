@@ -44,7 +44,9 @@
 	int** beta_matrix(int, int, double, M_P*, int, int);
 	int** mu_matrix(int**, int);
 	double** distance_matrix(int**, int);
+	double** distance_matrix_rn(int**, int, int);
 	int** input_point(int*);
+	int** input_point_rn(int*, int);
 	int** zero_one_matrix(double**, int, double);
 	double* find_lambda_value(double**, int);
 	matrici_persistenza* create_matrix_persistenza(double**, int, double*);
@@ -202,7 +204,6 @@
 		if (h == 0) {
 			//edge1 = input_id(edge1, sc1[h].size);
 			edge1 = input_null(edge1, sc1[h].size, sc1[h].size);
-			//print_matrix(edge1, sc1[h].size, sc1[h].size);
 			kernel_edge1 = input_id(kernel_edge1, sc1[h].size);
 			colonne_base_rango = sc1[h].size;
 		}
@@ -211,9 +212,15 @@
 			kernel_edge1 = kernel_base(edge1, sc1[h - 1].size, sc1[h].size, &colonne_base_rango);
 		}
 
+		
+
 		//se il nucleo è nullo bij = 0 perchè non ho simplessi da dove sono partito
 		if (!kernel_edge1)
 			return 0;
+
+		
+		//printf("kernel_edge1\n");
+		//print_matrix(kernel_edge1, sc1[h].size, colonne_base_rango);
 
 		//altrimenti applico il cambiamento di base al nucleo
 		int** matrix_j = NULL;
@@ -252,10 +259,10 @@
 		//applico f mettendo le due matrici una di seguito all'altra
 		int** matrix_f = NULL;
 		matrix_f = link2matrix_same_row(matrix_j, sc2[h].size, colonne_base_rango, edge2, row, col);
-		
 		//ne calcolo il rango
 		int rank1 = rank_matrix(matrix_f, sc2[h].size, col + colonne_base_rango);
-		
+		//printf("rank1 = %d\n", rank1);
+		//printf("rank2 = %d\n", rank2);
 		//il rango dell'omologia è la differenza tra il rango della matrice con f applicata
 		//e il rango di f
 		int b = rank1 - rank2;
@@ -319,6 +326,27 @@
 		return matrix;
 	}
 
+	//matrice delle distanze in rk 
+	double** distance_matrix_rn(int** point, int n, int k) {
+		int i = 0, j = 0;
+		double** matrix = NULL;
+		double somma = 0;
+		matrix = (double**)calloc(n, sizeof(double*));
+		for (i = 0; i < n; i++) {
+			matrix[i] = (double*)calloc(n, sizeof(double));
+		}
+		for (i = 0; i < n; i++) {
+			for (j = i; j < n; j++) {
+				for (int l = 0; l < k; l++)
+					somma += pow(point[l][i] - point[l][j], 2);
+				matrix[i][j] = sqrt(somma);
+				matrix[j][i] = matrix[i][j];
+				somma = 0;
+			}
+		}
+		return matrix;
+	}
+
 	//richiede i punti da input
 	int** input_point(int *k) {
 		int** matrix = NULL;
@@ -333,28 +361,49 @@
 			scanf("%d %d", &matrix[i][0], &matrix[i][1]);
 		}
 					
-	return matrix;
+		return matrix;
+	}
+
+	//prendo i punti in rn
+	int** input_point_rn(int* k, int n) {
+		int** matrix = NULL;
+		int l = 0;
+		printf("Inserisci il numero di punti: n = ");
+		scanf("%d", &l);
+		*k = l;
+		matrix = input_null(matrix, l, n);
+		int i = 0;
+		for (i = 0; i < l; i++) {
+			for (int j = 0; j < n; j++) {
+				printf("Inserisci le coordinate del punto %d: ", i + 1);
+				scanf("%d", &matrix[j][i]);
+			}
+		}
+
+		return matrix;
 	}
 
 	//calcola le matrici 0-1 partendo dalla matrice delle distanze e un valore lambda
 	int** zero_one_matrix(double** matrix, int n, double lambda) {
 		int** m = NULL;
-		m = input_null(m, n, n);
+		m = input_null(m, n, n);		
+		
 		int i = 0, j = 0;
 		for (i = 0; i < n; i++) {
 			for (j = i; j < n; j++) {
 				if (matrix[i][j] < lambda) {
+					//printf("1matrix[%d][%d] = %lf\n", i, j, matrix[i][j]);
 					m[i][j] = 1;
 					m[j][i] = 1;
 				}
 				else
 				{
+					//printf("2matrix[%d][%d] = %lf\n", i, j, matrix[i][j]);
 					m[i][j] = 0;
 					m[j][i] = 0;
 				}
 			}
 		}
-
 		return m;
 	}
 
@@ -415,7 +464,7 @@
 		double* lambda = find_lambda_value(matrix, n);
 		/*printf("lambda\n");
 		for (int i = 0; i < size; i++)
-			printf("%lf ", lambda[i]);*/
+			printf("lambda[%d] = %lf\n", i, lambda[i]);*/
 		//dentro il vettore ci sono zeri che salto 
 		int i = 0;
 		while (lambda[i] == 0)
@@ -428,13 +477,20 @@
 		mp = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
 		mp->l_min = 0.5;
 		mp->l_max = lambda[i]-0.5;
-		/*printf("\n\n\n\n Il codice inzia qui");
-		printf("l_max = %lf", mp->l_max);
-		printf("l_min = %lf", mp->l_min);*/
+		//printf("\n\n\n\n Il codice inzia qui");
+		//printf("l_max = %lf\n", mp->l_max);
+		//printf("l_min = %lf", mp->l_min);
 		mp->size = n;
-		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_max);
-		/*printf("\n\n\n");
-		print_matrix(mp->matrix_d, n, n);*/
+		/*printf("matrice n\n");
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				printf("%lf ", matrix[i][j]);
+			}
+			printf("\n");
+		}*/
+		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_min);
+		//printf("\n\n\n");
+		//print_matrix(mp->matrix_d, n, n);
 
 		mp->prev = NULL;
 		mp->next = NULL;

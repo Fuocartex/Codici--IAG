@@ -23,8 +23,6 @@
     <ClInclude Include="Include\Bezout.h" />
     <ClInclude Include="Include\Complesso_da_1_simplessi.h" />
     <ClInclude Include="Include\Compl_Simpl.h" />
-    <ClInclude Include="Include\Create_Factor.h" />
-    <ClInclude Include="Include\Fermat.h" />
     <ClInclude Include="Include\Fermat_old.h" />
     <ClInclude Include="Include\Matrix.h" />
     <ClInclude Include="Include\Omo.h" />
@@ -126,7 +124,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\sbona\vcpkg\installed\x64-windows\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gmp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
