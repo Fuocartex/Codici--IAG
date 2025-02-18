@@ -21,12 +21,6 @@
     <ClInclude Include="Include\Compl_Simpl.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Create_Factor.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Fermat.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Matrix.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>

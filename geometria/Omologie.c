@@ -12,7 +12,7 @@ int main() {
 
 	//Leggo il simplesso da un file e lo stmpo
 	SimplicialComplex* complex = readComplex_file("simplicial_complex.txt");
-	printComplex(complex, 3);
+	printComplex(complex, 2);
 
 	//controllo sia un complesso simpliciale
 	if (!isSimplicial(complex, size)) {

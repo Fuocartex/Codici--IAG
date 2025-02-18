@@ -1,5 +1,5 @@
-\babel@toc {italian}{}\relax 
-\babel@toc {italian}{}\relax 
+\babel@toc {italian}{}
+\babel@toc {italian}{}
 \contentsline {section}{\numberline {1}Geometria: analisi dati}{3}{section.1}%
 \contentsline {subsection}{\numberline {1.1}Complessi simpliciali}{3}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Complessi di catene e omologia simpliciale}{13}{subsection.1.2}%
