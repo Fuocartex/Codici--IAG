@@ -40,7 +40,7 @@ int main()
 	M_P* mod_p = create_Modulo_Persistenza(mp, max);
 	print1(mod_p, max);
 
-	//calcolo la matrice beta essendomi calcolato a mano la distanza più grande tra i punti e aggiungo 2
+	// calcolo la matrice beta essendomi calcolato a mano la distanza più grande tra i punti e aggiungo 2
 	int** matrix = NULL;
 	int lambda = ceil(l_max[0]);
 	matrix = beta_matrix(0, lambda, 0.5, mod_p, h, max);
