@@ -411,11 +411,11 @@
 	matrici_persistenza* create_matrix_persistenza(double** matrix, int n, double* l) {
 		matrici_persistenza* mp = NULL, * app = NULL, * my_new = NULL;
 		int size = (n*(n-1)/2);
-		printf("size = %d", size);
+		//printf("size = %d", size);
 		double* lambda = find_lambda_value(matrix, n);
-		printf("lambda\n");
+		/*printf("lambda\n");
 		for (int i = 0; i < size; i++)
-			printf("%lf ", lambda[i]);
+			printf("%lf ", lambda[i]);*/
 		//dentro il vettore ci sono zeri che salto 
 		int i = 0;
 		while (lambda[i] == 0)
@@ -428,13 +428,13 @@
 		mp = (matrici_persistenza*)malloc(sizeof(matrici_persistenza));
 		mp->l_min = 0.5;
 		mp->l_max = lambda[i]-0.5;
-		printf("\n\n\n\n Il codice inzia qui");
+		/*printf("\n\n\n\n Il codice inzia qui");
 		printf("l_max = %lf", mp->l_max);
-		printf("l_min = %lf", mp->l_min);
+		printf("l_min = %lf", mp->l_min);*/
 		mp->size = n;
 		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_max);
-		printf("\n\n\n");
-		print_matrix(mp->matrix_d, n, n);
+		/*printf("\n\n\n");
+		print_matrix(mp->matrix_d, n, n);*/
 
 		mp->prev = NULL;
 		mp->next = NULL;
@@ -451,18 +451,18 @@
 			}
 			if (i < size) {
 				my_new->l_max = lambda[i] - 0.5;
-				printf("l_max = %lf\n", my_new->l_max);
+				//printf("l_max = %lf\n", my_new->l_max);
 				my_new->size = n;
 				my_new->matrix_d = zero_one_matrix(matrix, n, my_new->l_max);
-				printf("\n\n\n");
-				print_matrix(my_new->matrix_d, n, n);
+				//printf("\n\n\n");
+				//print_matrix(my_new->matrix_d, n, n);
 				my_new->prev = mp;
 				my_new->next = NULL;
 				mp->next = my_new;
 				mp = my_new;
 				i++;
-				printf("l_min = %lf\n", my_new->l_min);
-				printf("l_max = %lf\n", my_new->l_max);
+				//printf("l_min = %lf\n", my_new->l_min);
+				//printf("l_max = %lf\n", my_new->l_max);
 			}
 			
 		}
@@ -472,10 +472,10 @@
 
 		my_new->l_max = my_new->l_min;
 		my_new->size = n;
-		printf("l_max = %lf\n", my_new->l_min);
+		//printf("l_max = %lf\n", my_new->l_min);
 		my_new->matrix_d = zero_one_matrix(matrix, n, my_new->l_max);
-		printf("Matrice n");
-		print_matrix(my_new->matrix_d, n, n);
+		//printf("Matrice n");
+		//print_matrix(my_new->matrix_d, n, n);
 		my_new->prev = mp;
 		my_new->next = NULL;
 		mp->next = my_new;
