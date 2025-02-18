@@ -355,6 +355,8 @@
 			}
 		}
 
+		print_matrix(m, 8, 8);
+
 		return m;
 	}
 
@@ -413,9 +415,9 @@
 		int size = (n*(n-1)/2);
 		//printf("size = %d", size);
 		double* lambda = find_lambda_value(matrix, n);
-		/*printf("lambda\n");
+		printf("lambda\n");
 		for (int i = 0; i < size; i++)
-			printf("%lf ", lambda[i]);*/
+			printf("%lf ", lambda[i]);
 		//dentro il vettore ci sono zeri che salto 
 		int i = 0;
 		while (lambda[i] == 0)
@@ -432,9 +434,9 @@
 		printf("l_max = %lf", mp->l_max);
 		printf("l_min = %lf", mp->l_min);*/
 		mp->size = n;
-		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_max);
-		/*printf("\n\n\n");
-		print_matrix(mp->matrix_d, n, n);*/
+		mp->matrix_d = zero_one_matrix(matrix, n, mp->l_min);
+		printf("\n\n\n");
+		print_matrix(mp->matrix_d, n, n);
 
 		mp->prev = NULL;
 		mp->next = NULL;

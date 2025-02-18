@@ -10,11 +10,36 @@ int main()
 	//salvo in m i punti di un piano cartesiano di cui voglio studiare la topologia
 	m = input_point(&k);
 	int n = k, h = 0, max = 0;
-    double** d = NULL;
+    //double** d = NULL;
 	
 	//calcolo la matrice delle distanze
-    d = distance_matrix(m, n);
+    //d = distance_matrix(m, n);
 	
+	double** d = NULL;
+	d = input_null(d, 8, 8);
+	int** c = NULL;
+	c = input_null(c, 3, 8);
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 8; j++)
+		{
+			
+			scanf("%d", &c[i][j]);
+		}
+	}
+	
+		
+
+
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+			d[i][j] = 10 * sqrt(pow((c[0][i] - c[0][j]), 2) + pow((c[1][i] - c[1][j]), 2) + pow((c[2][i] - c[2][j]), 2));
+	}
+	print_matrix(c, 3, 8);
+	
+	n = 8;
+
 	printf("Quale omologia vuoi calcolare? h = ");
 	scanf("%d", &h);
 
