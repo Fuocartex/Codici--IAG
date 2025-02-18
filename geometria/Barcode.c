@@ -80,11 +80,11 @@ int main()
     }
 
     // Pulizia: liberiamo la memoria allocata
-    free(json_matrix);
-    for (int i = 0; i < 24; i++) {
+    /*free(json_matrix);
+    for (int i = 0; i < size; i++) {
         free(matrix[i]);
     }
-    free(matrix);
+    free(matrix);*/
 	
 	return 0;
 }

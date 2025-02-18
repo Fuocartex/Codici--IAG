@@ -28,7 +28,7 @@
 	literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ù}{{\`u}}1 {ò}{{\`o}}1 {ì}{{\`i}}1,
 }
 
-\title{Istituzioni di Algebra e geometria}
+\title{Istituzioni di Algebra e Geometria}
 \author{Andrea Agostini 1996124\\ Simone Bonanni 1992505
 	\\Giacomo Gneri 2025964
 	\\ Marta Graziano 2024185
@@ -194,16 +194,16 @@
 	\vspace{1cm}\vspace{1cm}
 	
 	\subsubsection{Metodo \(p-1\) di Pollard}
-	Il metodo si basa su una "scommessa": ci si chiede se \(n=p_1^{e_1}...p_k^{e_k}\) è \textbf{\textit{b}-liscio}, ovvero se esiste un intero \textit{b} tale che \[p_i^{e_i}\le b\ \forall i\in\left\{1,...,k\right\}\]
-	Se ciò avviene allora si può trovare un divisore proprio di \textit{n} con il seguente metodo.
+	Un numero \(n=p_1^{e_1}...p_k^{e_k}\) è detto \textbf{\textit{b}-liscio}, se esiste un intero \textit{b} tale che \[p_i^{e_i}\le b\ \forall i\in\left\{1,...,k\right\}\]
+	Il codice che segue trova un divisore di n scommettendo sul fatto che almeno un gruppo ciclico Gp generato da p fattore primo di n sia tale che la cardinalità di $G_P$ sia b-liscia \textit{n}.
 	\vspace{1cm}
 	\lstinputlisting[caption= Pmeno1 Pollard.c]{algebra/Pmeno1_Pollard.c}
 	\vspace{1cm}\vspace{1cm}
 
 	\subsubsection{Algoritmo di Lenstra}
-	Si basa sulla costruzione di una curva ellittica \(y^2=x^3+ax+b\) a coefficienti nel campo \(\mathbb{F}_p\) con \textit{p} primo scelto in una lista predefinita. L'insieme di queste curve ha una struttura di gruppo naturale che può essere sfruttata per trovare un divisore di n, inoltre si può fare uso del logaritmo discreto su campi finiti per alleggerire i conti. ù
+	Si basa sulla costruzione di una curva ellittica \(y^2=x^3+ax+b\) a coefficienti nel campo \(\mathbb{F}_p\) con \textit{p} primo scelto in una lista predefinita. L'insieme di queste curve ha una struttura di gruppo naturale che può essere sfruttata per trovare un divisore di n.
 	\vspace{1cm}
-	\lstinputlisting[caption= Pmeno1 Lenstra.h]{Include/Lenstra.h}
+	\lstinputlisting[caption=  Lenstra.h]{Include/Lenstra.h}
 	\vspace{1cm}\vspace{1cm}
 	
 	\subsection{Logaritmo discreto}

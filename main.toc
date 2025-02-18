@@ -5,23 +5,23 @@
 \contentsline {subsection}{\numberline {1.2}Complessi di catene e omologia simpliciale}{13}{subsection.1.2}%
 \contentsline {subsection}{\numberline {1.3}Forma normale di Smith}{25}{subsection.1.3}%
 \contentsline {subsection}{\numberline {1.4}Categorie, funtori e moduli di persistenza}{33}{subsection.1.4}%
-\contentsline {section}{\numberline {2}Algebra: crittografia}{44}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Ideali su \(\mathbb {Z}\), MCD e identità di Bézout}{44}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Teorema cinese dei resti}{53}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Test di primalità}{55}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Test di Fermat}{55}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Test di Eulero}{60}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Test di Solovay-Strassen}{62}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Test di Miller-Rabin}{63}{subsubsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.4}Fattorizzazione di numeri composti}{66}{subsection.2.4}%
-\contentsline {subsubsection}{\numberline {2.4.1}Metodo rho di Pollard}{66}{subsubsection.2.4.1}%
-\contentsline {subsubsection}{\numberline {2.4.2}Basi di primi di Pomerance}{67}{subsubsection.2.4.2}%
-\contentsline {subsubsection}{\numberline {2.4.3}Metodo \(p-1\) di Pollard}{75}{subsubsection.2.4.3}%
-\contentsline {subsubsection}{\numberline {2.4.4}Algoritmo di Lenstra}{77}{subsubsection.2.4.4}%
-\contentsline {subsection}{\numberline {2.5}Logaritmo discreto}{84}{subsection.2.5}%
-\contentsline {subsection}{\numberline {2.6}Sistema a chiave pubblica RSA}{92}{subsection.2.6}%
-\contentsline {section}{\numberline {3}Codici ausiliari}{93}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Radici in Zp}{93}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Sistemi di interi}{94}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Frazioni Continue}{96}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Funzioni ausiliarie}{97}{subsection.3.4}%
+\contentsline {section}{\numberline {2}Algebra: crittografia}{45}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Ideali su \(\mathbb {Z}\), MCD e identità di Bézout}{45}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Teorema cinese dei resti}{54}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Test di primalità}{56}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Test di Fermat}{56}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Test di Eulero}{61}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Test di Solovay-Strassen}{63}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}Test di Miller-Rabin}{64}{subsubsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.4}Fattorizzazione di numeri composti}{67}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Metodo rho di Pollard}{67}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Basi di primi di Pomerance}{68}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Metodo \(p-1\) di Pollard}{76}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {2.4.4}Algoritmo di Lenstra}{78}{subsubsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.5}Logaritmo discreto}{85}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Sistema a chiave pubblica RSA}{93}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Codici ausiliari}{94}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Radici in Zp}{94}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Sistemi di interi}{95}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Frazioni Continue}{97}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Funzioni ausiliarie}{98}{subsection.3.4}%
